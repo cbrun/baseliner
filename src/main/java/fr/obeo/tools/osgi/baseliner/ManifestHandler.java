@@ -1,9 +1,6 @@
 package fr.obeo.tools.osgi.baseliner;
 
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -15,12 +12,14 @@ import java.util.jar.Manifest;
 import org.semver.Version;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.io.Files;
 
 public class ManifestHandler {
 
@@ -86,19 +85,46 @@ public class ManifestHandler {
 	}
 
 	public void setPackageVersion(String ns, Version inferedVersion) {
-		exportedPackages.put(ns, inferedVersion);
+		if (exportedPackages.get(ns) != null) {
+			exportedPackages.put(ns, inferedVersion);
+		}
 	}
 
 	public void update(File manifestFile) throws IOException {
-		FileInputStream fileInputStream = new FileInputStream(manifestFile);
-		Manifest diskManifest = new Manifest(fileInputStream);
+		if (exportedPackages.keySet().size() > 0) {
+			String originalContent = Files.toString(manifestFile,
+					Charsets.UTF_8);
+			List<String> updatedContent = Lists.newArrayList();
+			boolean isExportPackage = false;
+			for (String part : Splitter.on(": ").split(originalContent)) {
+				if (isExportPackage) {
+					/*
+					 * We retrieve the beginning of the last line which should
+					 * be another directive.
+					 */
+					List<String> lines = Lists.newArrayList(Splitter.on("\n")
+							.split(part));
+					String startOfNextDirective = lines.get(lines.size() - 1);
+					updatedContent.add(getExportPackageText() + "\n"
+							+ startOfNextDirective);
 
-		List<String> exportedPackagesText = Lists.newArrayList();
-		fileInputStream.close();
-		if (exportedPackages.size() > 0) {
-			for (Entry<String, Version> entry : exportedPackages.entrySet()) {
-				String ns = entry.getKey();
-				String version = entry.getValue().toString()
+				} else {
+					updatedContent.add(part);
+				}
+				isExportPackage = part.endsWith("Export-Package");
+
+			}
+			String updatedFileContent = Joiner.on(": ").join(updatedContent);
+			Files.write(updatedFileContent, manifestFile, Charsets.UTF_8);
+		}
+	}
+
+	private String getExportPackageText() {
+		String exportPackagesValues = "";
+		if (exportedPackages.keySet().size() > 0) {
+			List<String> exportedPackagesText = Lists.newArrayList();
+			for (String ns : exportedPackages.keySet()) {
+				String version = exportedPackages.get(ns).toString()
 						.replace("-SNAPSHOT", ".qualifier");
 				String extensions = ";version=\"" + version + "\"";
 				List<String> allExtensions = Lists.newArrayList();
@@ -107,14 +133,9 @@ public class ManifestHandler {
 				exportedPackagesText.add(ns
 						+ Joiner.on(';').join(allExtensions));
 			}
-			String exportPackagesValues = Joiner.on(",").join(
-					exportedPackagesText);			
-			diskManifest.getMainAttributes().putValue("Export-Package",
-					exportPackagesValues);
-			FileOutputStream out = new FileOutputStream(manifestFile);
-			diskManifest.write(out);
-			out.close();
+			exportPackagesValues = Joiner.on(",\n ").join(exportedPackagesText);
 		}
+		return exportPackagesValues;
 	}
 
 }
