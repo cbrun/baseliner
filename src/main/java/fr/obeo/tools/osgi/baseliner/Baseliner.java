@@ -81,29 +81,37 @@ public class Baseliner {
 
 						String ns = exportedPackage.getKey();
 
-						System.out
-								.println("===================================");
-						System.err.println("delta for " + ns);
-						System.err.println("specified version for package is "
-								+ exportedPackage.getValue());
+						// System.out
+						// .println("===================================");
+						// System.err.println("delta for " + ns);
+						// System.err.println("specified version for package is "
+						// + exportedPackage.getValue());
 
 						Delta packageDelta = result.get(ns);
 						if (packageDelta != null) {
 							if (jDiff.getOldPackageVersion(ns) != null) {
-								System.out.println("old package version : "
-										+ jDiff.getOldPackageVersion(ns));
 								Version inferedVersion = packageDelta
 										.infer(jDiff.getOldPackageVersion(ns));
-								System.out.println("infered version :"
-										+ inferedVersion);
+								if (inferedVersion.compareTo(jDiff
+										.getOldPackageVersion(ns)) != 0) {
+									System.out.println("==== " + ns
+											+ " package version : "
+											+ jDiff.getOldPackageVersion(ns)
+											+ " but infered version is :"
+											+ inferedVersion);
+									Dumper.dump(result.get(ns));
+								}
 								manifestHandler.setPackageVersion(ns,
 										inferedVersion);
 							} else {
-								System.out
-										.println("could not retrieve the old specified version.");
+								/*
+								 * we did not find the old specified version. It just mean the package was not exported yet.
+								 */
+//								System.err
+//										.println("could not retrieve the old specified version.");
 							}
 						} else {
-							System.out.println("no delta.");
+							// System.out.println("no delta.");
 						}
 						// dumpNSCompat(result, ns);
 					}
