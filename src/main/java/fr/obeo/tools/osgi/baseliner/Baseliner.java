@@ -41,11 +41,11 @@ public class Baseliner {
 	@Option(name = "--src", handler = StringArrayOptionHandler.class, usage = "The root folder of sources to update. These folders will be crawled for MANIFEST.MF files which are going to be updated based on the build deltas.")
 	private String[] srcLocations = { "/home/chipotortoose/Cedric/src/org.eclipse.emf.compare" };
 
-	private Collection<String> newBuildsLocations = Lists
-			.newArrayList("/home/chipotortoose/Cedric/Eclipse/4.3.2RC/eclipse/workspace/org.eclipse.pde.baselining/testdata/new/plugins");
+	@Option(name = "--newbin", handler = StringArrayOptionHandler.class, usage = "Root folders to look for the 'new' binaries. It can contains both .jar or .class files and will be recursively crawled.")
+	private String[] newBuildsLocations = { "/home/chipotortoose/Cedric/Eclipse/4.3.2RC/eclipse/workspace/org.eclipse.pde.baselining/testdata/new/plugins" };
 
-	private Collection<String> oldBuildsLocations = Lists
-			.newArrayList("/home/chipotortoose/Cedric/Eclipse/4.3.2RC/eclipse/workspace/org.eclipse.pde.baselining/testdata/old/plugins");
+	@Option(name = "--oldbin", handler = StringArrayOptionHandler.class, usage = "Root folders to look for the 'old' or baseline binaries. It can contains both .jar or .class files and will be recursively crawled.")
+	private String[] oldBuildsLocations = { "/home/chipotortoose/Cedric/Eclipse/4.3.2RC/eclipse/workspace/org.eclipse.pde.baselining/testdata/old/plugins" };
 
 	public void updateExportPackageVersions() throws DiffException {
 
