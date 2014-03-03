@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.jar.Manifest;
 
 import org.semver.Version;

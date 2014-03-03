@@ -2,6 +2,7 @@ package fr.obeo.tools.osgi.baseliner;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -69,16 +70,17 @@ public class OSGiBundleDiff {
 
 	private void loadManifestVersionsFromJar(Map<String, Version> packVersions,
 			File child) throws DiffException {
-		try {
-			JarFile jar = new JarFile(child);
-			Enumeration e = jar.entries();
+		try (JarFile jar = new JarFile(child);) {
+			Enumeration<JarEntry> e = jar.entries();
 			ManifestHandler handler = new ManifestHandler();
 			while (e.hasMoreElements()) {
 				JarEntry entry = (JarEntry) e.nextElement();
 				String name = entry.getName();
 				if (!entry.isDirectory() && "META-INF/MANIFEST.MF".equals(name)) {
-					handler.load(jar.getInputStream(entry));
-					packVersions.putAll(handler.getExportedPackages());
+					try (InputStream in = jar.getInputStream(entry);) {
+						handler.load(in);
+						packVersions.putAll(handler.getExportedPackages());
+					}
 				}
 			}
 		} catch (IOException ioe) {

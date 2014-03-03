@@ -3,8 +3,6 @@ package fr.obeo.tools.osgi.baseliner;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,18 +15,11 @@ import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 import org.osjava.jardiff.DiffException;
 import org.osjava.jardiff.SimpleDiffCriteria;
 import org.semver.Delta;
-import org.semver.Delta.Difference;
 import org.semver.Dumper;
 import org.semver.Version;
 import org.semver.jardiff.DifferenceAccumulatingHandler;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 public class Baseliner {
 
@@ -39,13 +30,13 @@ public class Baseliner {
 	 * deltas.
 	 */
 	@Option(name = "--src", handler = StringArrayOptionHandler.class, usage = "The root folder of sources to update. These folders will be crawled for MANIFEST.MF files which are going to be updated based on the build deltas.")
-	private String[] srcLocations = {  };
+	private String[] srcLocations = {};
 
 	@Option(name = "--newbin", handler = StringArrayOptionHandler.class, usage = "Root folders to look for the 'new' binaries. It can contains both .jar or .class files and will be recursively crawled.")
-	private String[] newBuildsLocations = { };
+	private String[] newBuildsLocations = {};
 
 	@Option(name = "--oldbin", handler = StringArrayOptionHandler.class, usage = "Root folders to look for the 'old' or baseline binaries. It can contains both .jar or .class files and will be recursively crawled.")
-	private String[] oldBuildsLocations = { };
+	private String[] oldBuildsLocations = {};
 
 	public void updateExportPackageVersions() throws DiffException {
 
@@ -70,9 +61,8 @@ public class Baseliner {
 		for (String srcRoot : srcLocations) {
 			List<File> manifestFiles = findManifestFiles(new File(srcRoot));
 			for (File manifestFile : manifestFiles) {
-				try {
-					FileInputStream fileInputStream = new FileInputStream(
-							manifestFile);
+				try (FileInputStream fileInputStream = new FileInputStream(
+						manifestFile);) {
 					ManifestHandler manifestHandler = new ManifestHandler();
 					manifestHandler.load(fileInputStream);
 
