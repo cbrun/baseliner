@@ -39,13 +39,13 @@ public class Baseliner {
 	 * deltas.
 	 */
 	@Option(name = "--src", handler = StringArrayOptionHandler.class, usage = "The root folder of sources to update. These folders will be crawled for MANIFEST.MF files which are going to be updated based on the build deltas.")
-	private String[] srcLocations = { "/home/chipotortoose/Cedric/src/org.eclipse.emf.compare" };
+	private String[] srcLocations = {  };
 
 	@Option(name = "--newbin", handler = StringArrayOptionHandler.class, usage = "Root folders to look for the 'new' binaries. It can contains both .jar or .class files and will be recursively crawled.")
-	private String[] newBuildsLocations = { "/home/chipotortoose/Cedric/Eclipse/4.3.2RC/eclipse/workspace/org.eclipse.pde.baselining/testdata/new/plugins" };
+	private String[] newBuildsLocations = { };
 
 	@Option(name = "--oldbin", handler = StringArrayOptionHandler.class, usage = "Root folders to look for the 'old' or baseline binaries. It can contains both .jar or .class files and will be recursively crawled.")
-	private String[] oldBuildsLocations = { "/home/chipotortoose/Cedric/Eclipse/4.3.2RC/eclipse/workspace/org.eclipse.pde.baselining/testdata/old/plugins" };
+	private String[] oldBuildsLocations = { };
 
 	public void updateExportPackageVersions() throws DiffException {
 
@@ -64,8 +64,8 @@ public class Baseliner {
 		}
 
 		final DifferenceAccumulatingHandler handler = new DifferenceAccumulatingHandler();
-		jDiff.diff(handler, new SimpleDiffCriteria());
-		Map<String, Delta> result = splitByPackage(handler.getDelta());
+		Map<String, Delta> result = jDiff.diffByPackage(handler,
+				new SimpleDiffCriteria());
 
 		for (String srcRoot : srcLocations) {
 			List<File> manifestFiles = findManifestFiles(new File(srcRoot));
@@ -105,10 +105,11 @@ public class Baseliner {
 										inferedVersion);
 							} else {
 								/*
-								 * we did not find the old specified version. It just mean the package was not exported yet.
+								 * we did not find the old specified version. It
+								 * just mean the package was not exported yet.
 								 */
-//								System.err
-//										.println("could not retrieve the old specified version.");
+								// System.err
+								// .println("could not retrieve the old specified version.");
 							}
 						} else {
 							// System.out.println("no delta.");
@@ -159,30 +160,6 @@ public class Baseliner {
 		}
 
 		return manifests;
-	}
-
-	private Map<String, Delta> splitByPackage(Delta in) {
-		Multimap<String, Difference> namespaceToDiff = HashMultimap.create();
-		Splitter dotSplit = Splitter.on('.');
-		for (Difference diff : in.getDifferences()) {
-			List<String> trimmed = Lists.newArrayList();
-			Iterable<String> segments = dotSplit.split(diff.getClassName());
-			Iterator<String> segIterator = segments.iterator();
-			while (segIterator.hasNext()) {
-				String cur = segIterator.next();
-				if (segIterator.hasNext()) {
-					trimmed.add(cur);
-				}
-			}
-			String namespace = Joiner.on('.').join(trimmed);
-			namespaceToDiff.put(namespace, diff);
-		}
-		Map<String, Delta> namespaceToDelta = Maps.newHashMap();
-		for (String ns : namespaceToDiff.keySet()) {
-			namespaceToDelta.put(ns,
-					new Delta(Sets.newLinkedHashSet(namespaceToDiff.get(ns))));
-		}
-		return namespaceToDelta;
 	}
 
 	public static void main(String[] args) {
