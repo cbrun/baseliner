@@ -89,7 +89,7 @@ public class Baseliner {
 											+ jDiff.getOldPackageVersion(ns)
 											+ " but infered version is :"
 											+ inferedVersion);
-									Dumper.dump(result.get(ns));
+									dumpNSCompat(result.get(ns));
 								}
 								manifestHandler.setPackageVersion(ns,
 										inferedVersion);
@@ -116,26 +116,25 @@ public class Baseliner {
 		}
 	}
 
-	private void dumpNSCompat(Map<String, Delta> result, String ns) {
-		if (result.get(ns) != null) {
-			Delta.CompatibilityType expectedCompatibilityType = Delta.CompatibilityType
-					.valueOf("BACKWARD_COMPATIBLE_USER");
-			final Delta.CompatibilityType detectedCompatibilityType = result
-					.get(ns).computeCompatibilityType();
-			if (detectedCompatibilityType.compareTo(expectedCompatibilityType) > 0) {
-				System.err.println("not backward compatible user");
-				// Not compatible.
-			}
+	private void dumpNSCompat(Delta delta) {
 
-			expectedCompatibilityType = Delta.CompatibilityType
-					.valueOf("BACKWARD_COMPATIBLE_IMPLEMENTER");
-
-			if (detectedCompatibilityType.compareTo(expectedCompatibilityType) > 0) {
-				System.err.println("not backward compatible implementer");
-				// Not compatible.
-			}
-			Dumper.dump(result.get(ns));
+		Delta.CompatibilityType expectedCompatibilityType = Delta.CompatibilityType
+				.valueOf("BACKWARD_COMPATIBLE_USER");
+		final Delta.CompatibilityType detectedCompatibilityType = delta
+				.computeCompatibilityType();
+		if (detectedCompatibilityType.compareTo(expectedCompatibilityType) > 0) {
+			System.err.println("/!\\ not backward compatible user");
+			// Not compatible.
 		}
+
+		expectedCompatibilityType = Delta.CompatibilityType
+				.valueOf("BACKWARD_COMPATIBLE_IMPLEMENTER");
+
+		if (detectedCompatibilityType.compareTo(expectedCompatibilityType) > 0) {
+			System.err.println("/!\\ not backward compatible implementer");
+			// Not compatible.
+		}
+		Dumper.dump(delta);
 	}
 
 	private List<File> findManifestFiles(File file) {
