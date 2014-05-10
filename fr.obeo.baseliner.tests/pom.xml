@@ -37,9 +37,9 @@
            <testFailureIgnore>true</testFailureIgnore>
            <failIfNoTests>false</failIfNoTests>
            <includes>
-              <include>**/*Test.class</include>                  
+              <include>**/*Test*.class</include>                  
 <!--Start of user code fr.obeo.baseliner.tests tests to include -->	
-<!-- TODO : you might want change your own includes here -->
+              <include>**/*Test*.class</include>                  
 <!--End of user code-->              
           </includes>
 	    <useUIHarness>false</useUIHarness>
