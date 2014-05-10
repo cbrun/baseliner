@@ -17,6 +17,10 @@
                     <executions>
                         <execution>
                             <id>default-cli</id>
+                            <phase>prepare-package</phase>
+			    <goals>
+                              <goal>site</goal>
+                             </goals>
                             <configuration>
                                 <artifacts>
                                     <!-- specify your depencies here -->
