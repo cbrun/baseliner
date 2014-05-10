@@ -1,0 +1,7 @@
+bin/
+target
+*~
+*.rej
+*.bak
+.DS_Store
+.directory

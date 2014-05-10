@@ -20,3 +20,5 @@ Bundle-ClassPath: lib/args4j-2.0.26.jar,
 Export-Package: org.osjava.jardiff,
  org.semver,
  org.semver.jardiff
+Bundle-Localization: plugin
+

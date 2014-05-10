@@ -18,3 +18,5 @@ Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.equinox.util,
  org.eclipse.equinox.ds,
  org.eclipse.osgi.services
+Bundle-Localization: plugin
+
