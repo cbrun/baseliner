@@ -5,7 +5,6 @@ Bundle-SymbolicName: fr.obeo.baseliner.semver.lib
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: lib/args4j-2.0.26.jar,
- lib/asm-2.2.3.jar,
  lib/asm-commons-2.2.3.jar,
  lib/asm-tree-2.2.3.jar,
  lib/classworlds-1.1.jar,
@@ -21,4 +20,5 @@ Export-Package: org.osjava.jardiff,
  org.semver,
  org.semver.jardiff
 Bundle-Localization: plugin
+Require-Bundle: asm;bundle-version="3.2.0"
 
