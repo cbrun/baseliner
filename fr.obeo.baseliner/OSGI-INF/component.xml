@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="fr.obeo.baseliner">
+   <implementation class="fr.obeo.baseliner.PluginBaseliner"/>
+   <reference bind="setBaselineJarProvider" cardinality="1..1" interface="fr.obeo.baseliner.BaselinerJarProvider" name="BaselinerJarProvider" policy="static" unbind="unsetBaselineJarProvider"/>
+   <service>
+      <provide interface="fr.obeo.baseliner.PluginBaseliner"/>
+   </service>
+   <reference bind="setApiComparator" cardinality="1..1" interface="fr.obeo.baseliner.ApiComparator" name="ApiComparator" policy="static" unbind="unsetApiComparator"/>
+</scr:component>

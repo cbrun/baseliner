@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="BaslinerBuilder"
+         name="Semantic Versioning Builder for Manifest.MF"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="fr.obeo.baseliner.ui.builder.BaselinerBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="BaslinerNature"
+         name="Semantic Versioning Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="fr.obeo.baseliner.ui.builder.BaselinerNature">
+         </run>
+      </runtime>
+      <builder
+            id="fr.obeo.baseliner.ui.BaslinerBuilder">
+      </builder>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IProject"
+            nameFilter="*"
+            id="fr.obeo.baseliner.ui.contribution1">
+         <action
+               label="Enable/Disable Automatic Versioning"
+               class="fr.obeo.baseliner.ui.builder.ToggleNatureAction"
+               menubarPath="additions"
+               enablesFor="+"
+               id="fr.obeo.baseliner.ui.addRemoveNatureAction">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>
