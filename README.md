@@ -4,11 +4,22 @@ baseliner
 Eclipse Plugins to enrich MANIFEST.MF's export packages with computed versions
 
 It automatically updates exported packages versions based on the current API Baseline.
-
 This tool reuses the baseline defined in the Eclipse preferences.
+
+If no package version was specified, the current bundle-version is taken.
+
 
 Right now it is using https://github.com/jeluard/semantic-versioning to do the actual computation of diff but that part 
 is decoupled through OSGi Declarative Services. This means one could provide another implementation quite easily.
+
+----------
+
+Giving it a try :
+- install it in your Eclipse IDE
+- Right click on a project then click on the action "Enable/Disable Automatic Versioning"
+- Set an API Baseline if none is set yet : http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.pde.doc.user%2Ftasks%2Fapi_tooling_baseline.htm
+- Enjoy
+
 
 ----------
 
