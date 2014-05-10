@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tycho:ProjectBuildInfo xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tycho="http://www.obeo.fr/dsl/tycho" groupid="fr.obeo" name="baseliner">
+  <parentProjectLocation href="folder:/home/cedric/src/baseliner#/"/>
+  <platforms>helios</platforms>
+  <platforms>juno</platforms>
+  <platforms>kepler</platforms>
+  <platforms>luna</platforms>
+  <children xsi:type="tycho:PluginBuildInfo" testInclude="**/*Test.class">
+    <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.semver.lib']/@artifacts.0"/>
+    <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.ui']/@artifacts.0"/>
+    <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner']/@artifacts.0"/>
+    <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.semver']/@artifacts.0"/>
+    <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.pde']/@artifacts.0"/>
+  </children>
+  <children xsi:type="tycho:PluginBuildInfo" testLevel="plugin" testInclude="**/*Test.class">
+    <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.tests']/@artifacts.0"/>
+  </children>
+  <children xsi:type="tycho:FeatureBuildInfo">
+    <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.ide']/@artifacts.0"/>
+    <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.ide.semver']/@artifacts.0"/>
+  </children>
+</tycho:ProjectBuildInfo>

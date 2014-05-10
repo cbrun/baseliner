@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  
+
+   
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
+    <groupId>fr.obeo</groupId>
+    <artifactId>fr.obeo-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+  
+
+    <properties>
+        <tycho-version>0.19.0</tycho-version>
+    </properties>
+
+
+    <modules>
+        <!-- OSGi bundles -->
+          <module>fr.obeo.baseliner.semver.lib/</module>
+          <module>fr.obeo.baseliner.ui/</module>
+          <module>fr.obeo.baseliner/</module>
+          <module>fr.obeo.baseliner.semver/</module>
+          <module>fr.obeo.baseliner.pde/</module>
+          <module>fr.obeo.baseliner.tests/</module>
+
+ 	    <!-- Eclipse Features -->
+          <module>fr.obeo.baseliner.ide/</module>           	
+          <module>fr.obeo.baseliner.ide.semver/</module>           	
+     <!-- update sites -->
+
+       <!-- global update site containing all the features -->
+	      <module>update/</module>
+    </modules>
+
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+        <plugins>
+           <plugin>
+			   <groupId>org.eclipse.tycho</groupId>
+			   <artifactId>tycho-packaging-plugin</artifactId>
+			   <version>${tycho-version}</version>
+			   <configuration>
+<!--Start of user code strict bin includes -->
+<!--
+  TODO : once your build is up and running, it is better to move this setting to true to get stricter checks.
+ -->
+               <strictBinIncludes>false</strictBinIncludes>
+<!--End of user code-->
+			   </configuration>
+            </plugin>
+	        <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-maven-plugin</artifactId>
+                <version>${tycho-version}</version>
+                <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>target-platform-configuration</artifactId>
+                <version>${tycho-version}</version>
+                <configuration>
+                    <resolver>p2</resolver>
+                    <environments>
+<!--Start of user code environments -->
+                        <environment>
+                            <os>linux</os>
+                            <ws>gtk</ws>
+                            <arch>x86</arch>
+                        </environment>
+                        <environment>
+                            <os>win32</os>
+                            <ws>win32</ws>
+                            <arch>x86</arch>
+                        </environment>
+                        <environment>
+                            <os>win32</os>
+                            <ws>win32</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+                        <environment>
+                            <os>linux</os>
+                            <ws>gtk</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+                        <environment>
+                            <os>macosx</os>
+                            <ws>cocoa</ws>
+                            <arch>x86_64</arch>
+                        </environment>
+<!--End of user code-->
+                    </environments>
+                </configuration>	          
+            </plugin>
+                <!-- enable source bundle generation -->
+                <plugin>
+                    <groupId>org.eclipse.tycho</groupId>
+                    <artifactId>tycho-source-plugin</artifactId>
+                    <version>${tycho-version}</version>
+                    <executions>
+                        <execution>
+                            <id>plugin-source</id>
+                            <goals>
+                                <goal>plugin-source</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                       <strictSrcIncludes>false</strictSrcIncludes>
+                    </configuration>
+                </plugin>
+   				<plugin>
+              <groupId>org.eclipse.tycho.extras</groupId>
+              <artifactId>tycho-source-feature-plugin</artifactId>
+              <version>${tycho-version}</version>
+	      <configuration>
+	        <archive>
+		    <addMavenDescriptor>false</addMavenDescriptor>
+	        </archive>
+              </configuration>
+              <executions>
+                  <execution>
+                      <id>source-feature</id>
+                      <phase>package</phase>
+                      <goals>
+                          <goal>source-feature</goal>
+                      </goals>
+                  </execution>
+              </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-p2-plugin</artifactId>
+            <version>${tycho-version}</version>
+            <executions>
+              <!-- These two should allow us not to get "duplicate artifact" warnings during the build. -->
+              <execution>
+                <!-- Don't attach (default) metadata before the source-feature execution.-->
+                <id>default-p2-metadata-default</id>
+                <configuration>
+                  <attachP2Metadata>false</attachP2Metadata>
+                </configuration>
+              </execution>
+              <execution>
+                <!-- Do attach metadata after the source-feature execution.-->
+                <id>attach-p2-metadata</id>
+                <goals>
+                  <goal>p2-metadata</goal>
+                </goals>
+                <phase>package</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.eclipse.tycho</groupId>
+                    <artifactId>tycho-compiler-plugin</artifactId>
+                    <version>${tycho-version}</version>
+                    <configuration>
+<!--Start of user code compiler configuration -->
+                        <encoding>UTF-8</encoding>
+<!--
+  TODO : once your build is up and running, it is better to move this setting to true to get stricter checks.
+ -->
+                        <compilerArgument>-warn:+discouraged,forbidden</compilerArgument>
+<!--End of user code-->
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.4.1</version>
+                    <configuration>
+                        <encoding>ISO-8859-1</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>2.3.2</version>
+                    <configuration>
+                        <findbugsXmlOutput>true</findbugsXmlOutput>
+                        <failOnError>false</failOnError>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>2.5</version>
+                    <configuration>
+                        <sourceEncoding>utf-8</sourceEncoding>
+                        <minimumTokens>100</minimumTokens>
+                        <targetJdk>1.5</targetJdk>
+                        <format>xml</format>
+                        <failOnViolation>false</failOnViolation>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>cpd-check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles> 
+	   <profile>
+            <id>helios</id>
+<!-- Start of user code helios update sites -->
+<!-- TODO : check this list of update sites provide all your external dependencies.-->
+            <repositories>    
+                <repository><id>eclipse</id><layout>p2</layout>
+                    <url>http://download.eclipse.org/releases/helios</url>
+                </repository>
+            </repositories>
+	   </profile>
+<!-- End of user code-->
+	   <profile>
+            <id>juno</id>
+<!-- Start of user code juno update sites -->
+<!-- TODO : check this list of update sites provide all your external dependencies.-->
+            <repositories>    
+                <repository><id>eclipse</id><layout>p2</layout>
+                    <url>http://download.eclipse.org/releases/juno</url>
+                </repository>
+            </repositories>
+	   </profile>
+<!-- End of user code-->
+	   <profile>
+            <id>kepler</id>
+<!-- Start of user code kepler update sites -->
+<!-- TODO : check this list of update sites provide all your external dependencies.-->
+            <repositories>    
+                <repository><id>eclipse</id><layout>p2</layout>
+                    <url>http://download.eclipse.org/releases/kepler</url>
+                </repository>
+            </repositories>
+	   </profile>
+<!-- End of user code-->
+	   <profile>
+            <id>luna</id>
+<!-- Start of user code luna update sites -->
+<!-- TODO : check this list of update sites provide all your external dependencies.-->
+            <repositories>    
+                <repository><id>eclipse</id><layout>p2</layout>
+                    <url>http://download.eclipse.org/releases/luna</url>
+                </repository>
+            </repositories>
+	   </profile>
+<!-- End of user code-->
+
+        <profile>
+            <id>sign</id>
+            <activation>
+                <property>
+                    <name>BUILD_SIGN</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.eclipse.tycho.extras</groupId>
+                        <artifactId>tycho-pack200a-plugin</artifactId>
+                        <version>0.18.1</version>
+                        <executions>
+                            <execution>
+                                <id>pack200-normalize</id>
+                                <goals>
+                                    <goal>normalize</goal>
+                                </goals>
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.eclipse.cbi.maven.plugins</groupId>
+                        <artifactId>eclipse-jarsigner-plugin</artifactId>
+                        <version>1.0.4</version>
+                        <executions>
+                            <execution>
+                                <id>sign</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.eclipse.tycho.extras</groupId>
+                        <artifactId>tycho-pack200b-plugin</artifactId>
+                        <version>0.18.1</version>
+                        <executions>
+                            <execution>
+                                <id>pack200-pack</id>
+                                <goals>
+                                    <goal>pack</goal>
+                                </goals>
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>cbi</id>
+                    <url>https://repo.eclipse.org/content/repositories/cbi-releases/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+		 
+        </profile>
+
+        <profile>
+            <id>checkstyle</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <version>2.6</version>
+                        <executions>
+                            <execution>
+                                <id>check my sources</id>
+                                <goals>
+                                    <goal>checkstyle</goal>
+                                </goals>
+                                <phase>verify</phase>
+                                <configuration>
+                                    <failOnErrors>false</failOnErrors>
+                                    <consoleOutput>true</consoleOutput>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>coverage</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>org.eclemma.runtime.equinox</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>static-checks</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>findbugs-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

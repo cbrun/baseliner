@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<site>
+   <feature id="fr.obeo.baseliner.ide" version="1.0.0.qualifier">
+      <category name="fr.obeo"/>
+   </feature>
+   <feature id="fr.obeo.baseliner.ide.semver" version="1.0.0.qualifier">
+      <category name="fr.obeo"/>
+   </feature>
+   <category-def name="fr.obeo" label="baseliner">
+      <description>        
+      </description>
+   </category-def>
+	<category-def name="fr.obeo.source" label="baseliner SDK">
+      <description>        
+      </description>
+   </category-def>
+   <feature id="fr.obeo.baseliner.ide.source" version="1.0.0.qualifier">
+      <category name="fr.obeo.source"/>
+   </feature>
+   <feature id="fr.obeo.baseliner.ide.semver.source" version="1.0.0.qualifier">
+      <category name="fr.obeo.source"/>
+   </feature>
+
+</site>
