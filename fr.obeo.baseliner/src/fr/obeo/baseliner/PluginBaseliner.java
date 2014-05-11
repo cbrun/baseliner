@@ -2,6 +2,7 @@ package fr.obeo.baseliner;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -49,15 +50,14 @@ public class PluginBaseliner {
 	}
 
 	public String updateManifestFile(File manifestFile,
-			Collection<File> outputDirs, Collection<File> srcDirs) {
+			Collection<File> outputDirs, Collection<File> srcDirs) throws FileNotFoundException {
 		String diffReport = null;
 		if (apiComparator.isPresent()) {
 			for (File outputDirectory : outputDirs) {
 				apiComparator.get().loadNewClassesFromFolder(outputDirectory);
 			}
-
-			try (FileInputStream fileInputStream = new FileInputStream(
-					manifestFile);) {
+			FileInputStream fileInputStream = new FileInputStream(manifestFile);
+			try {
 				ManifestHandler manifestHandler = new ManifestHandler();
 				manifestHandler.load(fileInputStream);
 				if (jarProvider.isPresent()) {
@@ -116,8 +116,13 @@ public class PluginBaseliner {
 
 				manifestHandler.update(manifestFile);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} finally {
+				try {
+					fileInputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return diffReport;

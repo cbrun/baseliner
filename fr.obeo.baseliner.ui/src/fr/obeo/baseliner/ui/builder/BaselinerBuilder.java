@@ -1,6 +1,7 @@
 package fr.obeo.baseliner.ui.builder;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -84,6 +85,9 @@ public class BaselinerBuilder extends IncrementalProjectBuilder {
 		} catch (CoreException e) {
 			e.printStackTrace();
 			// TODO log
+		} catch (FileNotFoundException e) {
+			// TODO log
+			e.printStackTrace();
 		}
 	}
 
