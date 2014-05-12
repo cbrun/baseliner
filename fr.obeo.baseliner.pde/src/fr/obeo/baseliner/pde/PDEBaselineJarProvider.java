@@ -12,9 +12,8 @@ public class PDEBaselineJarProvider implements BaselinerJarProvider {
 
 	@Override
 	public File getPreviousJar(String symbolicName, String bundleVersion) {
-		IApiBaseline baseline = ApiPlugin.getDefault().getApiBaselineManager()
-				.getDefaultApiBaseline();
-		if (baseline != null) {
+		for (IApiBaseline baseline : ApiPlugin.getDefault().getApiBaselineManager()
+				.getApiBaselines()) {
 			IApiComponent bundle = baseline.getApiComponent(symbolicName);
 			if (bundle != null && bundle.getLocation() != null) {
 				File jarFile = new File(bundle.getLocation());
@@ -22,6 +21,7 @@ public class PDEBaselineJarProvider implements BaselinerJarProvider {
 					return jarFile;
 				}
 			}
+			
 		}
 		return null;
 	}
