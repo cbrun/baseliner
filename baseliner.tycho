@@ -11,6 +11,7 @@
     <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner']/@artifacts.0"/>
     <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.semver']/@artifacts.0"/>
     <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.pde']/@artifacts.0"/>
+    <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.bnd']/@artifacts.0"/>
   </children>
   <children xsi:type="tycho:PluginBuildInfo" testLevel="plugin" testInclude="**/*Test.class">
     <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.tests']/@artifacts.0"/>

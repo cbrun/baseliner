@@ -35,7 +35,6 @@
             <configuration>
               <excludes>
                 <plugin id="biz.aQute.bndlib"/>
-                <plugin id="fr.obeo.baseliner.bnd"/>
               </excludes>
             </configuration>
           </execution>

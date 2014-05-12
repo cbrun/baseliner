@@ -33,12 +33,14 @@
 <!--Start of user code extra modules -->	    
           <module>fr.obeo.baseliner.mavenlibs</module>
 <!--End of user code-->                
+
         <!-- OSGi bundles -->
           <module>fr.obeo.baseliner.semver.lib/</module>
           <module>fr.obeo.baseliner.ui/</module>
           <module>fr.obeo.baseliner/</module>
           <module>fr.obeo.baseliner.semver/</module>
           <module>fr.obeo.baseliner.pde/</module>
+          <module>fr.obeo.baseliner.bnd/</module>
           <module>fr.obeo.baseliner.tests/</module>
 
  	    <!-- Eclipse Features -->
