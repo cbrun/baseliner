@@ -44,7 +44,7 @@ public class Baseliner {
 		for (String location : newBuildsLocations) {
 			File jarLocation = new File(location);
 			if (jarLocation.isDirectory() && jarLocation.exists()) {
-				jDiff.loadNewClassesFromFolder(jarLocation);
+				jDiff.loadNewClassesFromFolder(null,jarLocation);
 			}
 		}
 
@@ -79,28 +79,16 @@ public class Baseliner {
 
 						Delta packageDelta = result.get(ns);
 						if (packageDelta != null) {
-							if (jDiff.getOldPackageVersion(ns) != null) {
-								Version inferedVersion = packageDelta
-										.infer(jDiff.getOldPackageVersion(ns));
-								if (inferedVersion.compareTo(jDiff
-										.getOldPackageVersion(ns)) != 0) {
-									System.out.println("==== " + ns
-											+ " package version : "
-											+ jDiff.getOldPackageVersion(ns)
-											+ " but infered version is :"
-											+ inferedVersion);
-									// dumpNSCompat(result.get(ns));
-								}
-								manifestHandler.setPackageVersion(ns,
-										inferedVersion);
-							} else {
-								/*
-								 * we did not find the old specified version. It
-								 * just mean the package was not exported yet.
-								 */
-								// System.err
-								// .println("could not retrieve the old specified version.");
-							}
+							Version inferedVersion = packageDelta
+									.getSuggestedVersion();
+							System.out.println("==== " + ns
+									+ " package version : "
+									+ packageDelta.getSuggestedVersion()
+									+ " but infered version is :"
+									+ inferedVersion);
+							// dumpNSCompat(result.get(ns));
+							manifestHandler.setPackageVersion(ns,
+									inferedVersion);
 						} else {
 							// System.out.println("no delta.");
 						}

@@ -39,7 +39,7 @@ public class OSGiBundleDiff implements ApiComparator {
 
 	protected Map<String, Version> newPackageVersions = Maps.newHashMap();
 
-	public void loadNewClassesFromFolder(File folder) throws RuntimeException {
+	public void loadNewClassesFromFolder(File projectFolder,File folder) throws RuntimeException {
 		try {
 			if (folder.isDirectory()) {
 				for (File child : folder.listFiles()) {
@@ -50,7 +50,7 @@ public class OSGiBundleDiff implements ApiComparator {
 						wrapped.loadNewClasses(child);
 						loadManifestVersionsFromJar(newPackageVersions, child);
 					} else if (child.isDirectory()) {
-						loadNewClassesFromFolder(child);
+						loadNewClassesFromFolder(projectFolder,child);
 					}
 				}
 			}
@@ -156,14 +156,10 @@ public class OSGiBundleDiff implements ApiComparator {
 			namespaceToDelta.put(
 					ns,
 					new WrappedDelta(new org.semver.Delta(Sets
-							.newLinkedHashSet(namespaceToDiff.get(ns)))));
+							.newLinkedHashSet(namespaceToDiff.get(ns))),
+							oldPackageVersions.get(ns)));
 		}
 		return namespaceToDelta;
-	}
-
-	public org.osgi.framework.Version getOldPackageVersion(String namespace) {
-		Version oldPackageVersion = oldPackageVersions.get(namespace);
-		return WrappedDelta.toOSGIVersion(oldPackageVersion);
 	}
 
 	public Version getNewPackageVersion(String namespace) {

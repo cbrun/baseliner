@@ -7,12 +7,17 @@ Bundle-Vendor: Obeo.fr
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: fr.obeo.baseliner,
  org.osgi.framework;version="1.7.0"
-Service-Component: OSGI-INF/component.xml
+Service-Component: OSGI-INF/component.xml,
+ OSGI-INF/cleanup.xml
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.equinox.util,
  org.eclipse.equinox.ds,
  org.eclipse.osgi.services,
  org.eclipse.pde.api.tools,
+ org.eclipse.pde.core,
+ org.eclipse.pde.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ltk.core.refactoring,
  org.eclipse.core.resources;bundle-version="3.8.1"
 Bundle-Localization: plugin
 

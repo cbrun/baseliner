@@ -18,18 +18,28 @@ public class PluginBaseliner {
 
 	private Optional<ApiComparator> apiComparator;
 
-	// Method will be used by DS to set the quote service
+	private ManifestCleanup cleanup = new NOOPManifestCleanup();
+
 	public synchronized void setBaselineJarProvider(
 			BaselinerJarProvider jarProvider) {
 		this.jarProvider = Optional.of(jarProvider);
 	}
 
-	// Method will be used by DS to unset the quote service
 	public synchronized void unsetBaselineJarProvider(
 			BaselinerJarProvider jarProvider) {
 		if (this.jarProvider.isPresent()
 				&& this.jarProvider.get() == jarProvider) {
 			this.jarProvider = Optional.absent();
+		}
+	}
+
+	public synchronized void setManifestCleanup(ManifestCleanup cleanup) {
+		this.cleanup = cleanup;
+	}
+
+	public synchronized void unsetManifestCleanup(ManifestCleanup cleanup) {
+		if (this.cleanup == cleanup) {
+			this.cleanup = new NOOPManifestCleanup();
 		}
 	}
 
@@ -50,11 +60,20 @@ public class PluginBaseliner {
 	}
 
 	public String updateManifestFile(File manifestFile,
-			Collection<File> outputDirs, Collection<File> srcDirs) throws FileNotFoundException {
+			Collection<File> outputDirs, Collection<File> srcDirs)
+			throws FileNotFoundException {
+		String apiDiffReport = addExportedPackagesVersions(manifestFile,
+				outputDirs);
+		cleanup.cleanup(manifestFile);
+		return apiDiffReport;
+	}
+
+	private String addExportedPackagesVersions(File manifestFile,
+			Collection<File> outputDirs) throws FileNotFoundException {
 		String diffReport = null;
 		if (apiComparator.isPresent()) {
 			for (File outputDirectory : outputDirs) {
-				apiComparator.get().loadNewClassesFromFolder(outputDirectory);
+				apiComparator.get().loadNewClassesFromFolder(outputDirectory.getParentFile(),outputDirectory);
 			}
 			FileInputStream fileInputStream = new FileInputStream(manifestFile);
 			try {
@@ -83,31 +102,14 @@ public class PluginBaseliner {
 
 					Delta packageDelta = result.get(ns);
 					if (packageDelta != null) {
-						if (apiComparator.get().getOldPackageVersion(ns) != null) {
-							Version inferedVersion = packageDelta
-									.infer(apiComparator.get()
-											.getOldPackageVersion(ns));
-							if (inferedVersion.compareTo(apiComparator.get()
-									.getOldPackageVersion(ns)) != 0) {
-								System.out.println("==== "
-										+ ns
-										+ " package version : "
-										+ apiComparator.get()
-												.getOldPackageVersion(ns)
-										+ " but infered version is :"
-										+ inferedVersion);
-								// dumpNSCompat(result.get(ns));
-							}
-							manifestHandler.setPackageVersion(ns,
-									inferedVersion);
-						} else {
-							/*
-							 * we did not find the old specified version. It
-							 * just mean the package was not exported yet.
-							 */
-							// System.err
-							// .println("could not retrieve the old specified version.");
-						}
+						Version inferedVersion = packageDelta
+								.getSuggestedVersion();
+							System.out.println("==== "
+									+ ns
+									+ " package infered version : "									
+									+ inferedVersion);
+							// dumpNSCompat(result.get(ns));
+						manifestHandler.setPackageVersion(ns, inferedVersion);
 					} else {
 						// System.out.println("no delta.");
 					}

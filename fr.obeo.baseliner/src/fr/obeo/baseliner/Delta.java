@@ -4,6 +4,8 @@ import org.osgi.framework.Version;
 
 public interface Delta {
 
-	Version infer(Version oldPackageVersion);
+	Version getSuggestedVersion();
+	
+	String getDescription();
 
 }

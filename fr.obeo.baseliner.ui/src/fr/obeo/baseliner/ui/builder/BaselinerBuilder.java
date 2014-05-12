@@ -10,9 +10,8 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -38,16 +37,16 @@ public class BaselinerBuilder extends IncrementalProjectBuilder {
 	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 			throws CoreException {
-		// if (kind == FULL_BUILD) {
-		fullBuild(monitor);
-		// } else {
-		// IResourceDelta delta = getDelta(getProject());
-		// if (delta == null) {
-		// fullBuild(monitor);
-		// } else {
-		// incrementalBuild(delta, monitor);
-		// }
-		// }
+//		if (kind == FULL_BUILD) {
+			fullBuild(monitor);
+//		} else {
+//			IResourceDelta delta = getDelta(getProject());
+//			if (delta == null) {
+//				fullBuild(monitor);
+//			} else {
+////				incrementalBuild(delta, monitor);
+//			}
+//		}
 		return null;
 	}
 

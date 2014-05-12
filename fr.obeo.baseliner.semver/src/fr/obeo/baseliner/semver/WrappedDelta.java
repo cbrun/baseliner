@@ -7,15 +7,17 @@ import fr.obeo.baseliner.Delta;
 public class WrappedDelta implements Delta {
 
 	private org.semver.Delta wrapped;
+	private org.semver.Version oldVersion;
 
-	public WrappedDelta(org.semver.Delta semVerDelta) {
+	public WrappedDelta(org.semver.Delta semVerDelta,
+			org.semver.Version oldVersion) {
 		this.wrapped = semVerDelta;
+		this.oldVersion = oldVersion;
 	}
 
 	@Override
-	public Version infer(Version oldPackageVersion) {
-		return toOSGIVersion(this.wrapped
-				.infer(toSemVersion(oldPackageVersion)));
+	public Version getSuggestedVersion() {
+		return toOSGIVersion(this.wrapped.infer(oldVersion));
 	}
 
 	public static Version toOSGIVersion(org.semver.Version oldPackageVersion) {
