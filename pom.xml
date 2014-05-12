@@ -33,7 +33,6 @@
 <!--Start of user code extra modules -->	    
           <module>fr.obeo.baseliner.mavenlibs</module>
 <!--End of user code-->                
-
         <!-- OSGi bundles -->
           <module>fr.obeo.baseliner.semver.lib/</module>
           <module>fr.obeo.baseliner.ui/</module>
