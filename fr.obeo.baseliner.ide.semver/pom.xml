@@ -34,6 +34,12 @@
             </goals>
             <configuration>
               <excludes>
+                <plugin id="asm.commons"/>
+                <plugin id="asm.tree"/>
+                <plugin id="commons-lang"/>
+                <plugin id="com.google.code.findbugs.jsr305"/>
+                <plugin id="de.tototec.de.tototec.cmdoption"/>
+                <plugin id="asm"/>
               </excludes>
             </configuration>
           </execution>

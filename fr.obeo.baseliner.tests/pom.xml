@@ -37,7 +37,7 @@
            <testFailureIgnore>true</testFailureIgnore>
            <failIfNoTests>false</failIfNoTests>
            <includes>
-              <include>**/*Test*.class</include>                  
+              <include>**/*Test.class</include>                  
 <!--Start of user code fr.obeo.baseliner.tests tests to include -->	
               <include>**/*Test*.class</include>                  
 <!--End of user code-->              

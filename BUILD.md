@@ -117,9 +117,9 @@ If you need to sign the build artifacts, use the profile SIGN, for instance:
 
 Creating the job
 
-`curl --user USER:PASS -H "Content-Type: text/xml" -s --data-binary "@config.xml" "http://JENKINS_ENDPOINT/createItem?name=baseliner--invalid"`
+`curl --user USER:PASS -H "Content-Type: text/xml" -s --data-binary "@config.xml" "http://JENKINS_ENDPOINT/createItem?name=baseliner--master"`
 
 Updating the job 
 
-`curl --user USER:PASS -H "Content-Type: text/xml" -s --data-binary "@config.xml" "http://JENKINS_ENDPOINT/job/baseliner--invalid/config.xml`
+`curl --user USER:PASS -H "Content-Type: text/xml" -s --data-binary "@config.xml" "http://JENKINS_ENDPOINT/job/baseliner--master/config.xml`
 

@@ -19,4 +19,5 @@
     <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.ide']/@artifacts.0"/>
     <selected href="folder:/home/cedric/src/baseliner#//@folders[name='fr.obeo.baseliner.ide.semver']/@artifacts.0"/>
   </children>
+  <git href="folder:/home/cedric/src/baseliner#//@artifacts.0"/>
 </tycho:ProjectBuildInfo>
