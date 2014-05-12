@@ -28,6 +28,7 @@ Next steps
 
 * Proper buids and distribution
 * per-project configuration to specify namespaces to ignore
+* trigger ManifestCleanup and keep project-specific settings.
 * Make sure the micro segment is updated for non-breaking changes.
 * automatic rule always export all the packages with the "internal" tag with explicit opt-in.
 * automatic upgrade of the bundle version based on the package versions.
@@ -37,7 +38,8 @@ Next steps
 
 The code is pretty much in a draf state right now, what is notably missing :
 
-* Review of naming in the APIs
-* Proper error handling and logging
+* Review of naming in the APIs.
+* The builder is not filtering deltas, it will be triggered whatever change happen, N times for N projects.
+* Proper error handling and logging.
 * Proper target platform definition.
 * Import-Package versioning ;)
