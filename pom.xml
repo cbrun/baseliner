@@ -27,7 +27,7 @@
 
 
     <modules>
-          <module>fr.obeo.baseliner.mavenlibs</modules>
+          <module>fr.obeo.baseliner.mavenlibs</module>
         <!-- OSGi bundles -->
           <module>fr.obeo.baseliner.semver.lib/</module>
           <module>fr.obeo.baseliner.ui/</module>
