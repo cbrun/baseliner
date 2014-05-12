@@ -12,10 +12,11 @@ If no package version was specified, the current bundle-version is taken.
 Right now it is using https://github.com/jeluard/semantic-versioning to do the actual computation of diff but that part 
 is decoupled through OSGi Declarative Services. This means one could provide another implementation quite easily.
 
+
 ----------
 
 Giving it a try :
-- install it in your Eclipse IDE
+- install it in your Eclipse IDE, update site is here : http://marketplace.obeonetwork.com/updates/nightly/baseliner/repository
 - Right click on a project then click on the action "Enable/Disable Automatic Versioning"
 - Set an API Baseline if none is set yet : http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.pde.doc.user%2Ftasks%2Fapi_tooling_baseline.htm
 - Enjoy
