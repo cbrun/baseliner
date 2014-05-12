@@ -4,7 +4,7 @@ Bundle-Name: Pde
 Bundle-SymbolicName: fr.obeo.baseliner.pde
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Obeo.fr
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: fr.obeo.baseliner,
  org.osgi.framework;version="1.7.0"
 Service-Component: OSGI-INF/component.xml

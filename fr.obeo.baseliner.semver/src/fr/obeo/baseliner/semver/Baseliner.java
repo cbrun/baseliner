@@ -2,6 +2,7 @@ package fr.obeo.baseliner.semver;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,8 @@ public class Baseliner {
 	@Option(name = "--oldbin", handler = StringArrayOptionHandler.class, usage = "Root folders to look for the 'old' or baseline binaries. It can contains both .jar or .class files and will be recursively crawled.")
 	private String[] oldBuildsLocations = {};
 
-	public void updateExportPackageVersions() throws DiffException {
+	public void updateExportPackageVersions() throws DiffException,
+			FileNotFoundException {
 
 		for (String location : newBuildsLocations) {
 			File jarLocation = new File(location);
@@ -58,8 +60,9 @@ public class Baseliner {
 		for (String srcRoot : srcLocations) {
 			List<File> manifestFiles = findManifestFiles(new File(srcRoot));
 			for (File manifestFile : manifestFiles) {
-				try (FileInputStream fileInputStream = new FileInputStream(
-						manifestFile);) {
+				FileInputStream fileInputStream = new FileInputStream(
+						manifestFile);
+				try {
 					ManifestHandler manifestHandler = new ManifestHandler();
 					manifestHandler.load(fileInputStream);
 
@@ -86,7 +89,7 @@ public class Baseliner {
 											+ jDiff.getOldPackageVersion(ns)
 											+ " but infered version is :"
 											+ inferedVersion);
-//									dumpNSCompat(result.get(ns));
+									// dumpNSCompat(result.get(ns));
 								}
 								manifestHandler.setPackageVersion(ns,
 										inferedVersion);
@@ -108,31 +111,39 @@ public class Baseliner {
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} finally {
+					try {
+						fileInputStream.close();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
 	}
 
-//	private void dumpNSCompat(Delta delta) {
-//
-//		Delta.CompatibilityType expectedCompatibilityType = Delta.CompatibilityType
-//				.valueOf("BACKWARD_COMPATIBLE_USER");
-//		final Delta.CompatibilityType detectedCompatibilityType = delta
-//				.computeCompatibilityType();
-//		if (detectedCompatibilityType.compareTo(expectedCompatibilityType) > 0) {
-//			System.err.println("/!\\ not backward compatible user");
-//			// Not compatible.
-//		}
-//
-//		expectedCompatibilityType = Delta.CompatibilityType
-//				.valueOf("BACKWARD_COMPATIBLE_IMPLEMENTER");
-//
-//		if (detectedCompatibilityType.compareTo(expectedCompatibilityType) > 0) {
-//			System.err.println("/!\\ not backward compatible implementer");
-//			// Not compatible.
-//		}
-//		Dumper.dump(delta);
-//	}
+	// private void dumpNSCompat(Delta delta) {
+	//
+	// Delta.CompatibilityType expectedCompatibilityType =
+	// Delta.CompatibilityType
+	// .valueOf("BACKWARD_COMPATIBLE_USER");
+	// final Delta.CompatibilityType detectedCompatibilityType = delta
+	// .computeCompatibilityType();
+	// if (detectedCompatibilityType.compareTo(expectedCompatibilityType) > 0) {
+	// System.err.println("/!\\ not backward compatible user");
+	// // Not compatible.
+	// }
+	//
+	// expectedCompatibilityType = Delta.CompatibilityType
+	// .valueOf("BACKWARD_COMPATIBLE_IMPLEMENTER");
+	//
+	// if (detectedCompatibilityType.compareTo(expectedCompatibilityType) > 0) {
+	// System.err.println("/!\\ not backward compatible implementer");
+	// // Not compatible.
+	// }
+	// Dumper.dump(delta);
+	// }
 
 	private List<File> findManifestFiles(File file) {
 		List<File> manifests = Lists.newArrayList();
@@ -175,8 +186,8 @@ public class Baseliner {
 			System.err.println();
 
 			// print option sample. This is useful some time
-			//System.err.println("  Example: java SampleMain"
-			//		+ parser.printExample(OptionHandlerFilter.ALL));
+			// System.err.println("  Example: java SampleMain"
+			// + parser.printExample(OptionHandlerFilter.ALL));
 
 			return;
 		}
@@ -184,6 +195,9 @@ public class Baseliner {
 		try {
 			updateExportPackageVersions();
 		} catch (DiffException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

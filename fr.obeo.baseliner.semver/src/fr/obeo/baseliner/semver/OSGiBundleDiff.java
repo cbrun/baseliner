@@ -90,22 +90,32 @@ public class OSGiBundleDiff implements ApiComparator {
 
 	private void loadManifestVersionsFromJar(Map<String, Version> packVersions,
 			File child) throws RuntimeException {
-		try (JarFile jar = new JarFile(child);) {
-			Enumeration<JarEntry> e = jar.entries();
-			ManifestHandler handler = new ManifestHandler();
-			while (e.hasMoreElements()) {
-				JarEntry entry = (JarEntry) e.nextElement();
-				String name = entry.getName();
-				if (!entry.isDirectory() && "META-INF/MANIFEST.MF".equals(name)) {
-					try (InputStream in = jar.getInputStream(entry);) {
-						handler.load(in);
-						for (Entry<String, org.osgi.framework.Version> mapEntry : handler
-								.getExportedPackages().entrySet()) {
-							packVersions.put(mapEntry.getKey(), WrappedDelta
-									.toSemVersion(mapEntry.getValue()));
+		try {
+			JarFile jar = new JarFile(child);
+			try {
+				Enumeration<JarEntry> e = jar.entries();
+				ManifestHandler handler = new ManifestHandler();
+				while (e.hasMoreElements()) {
+					JarEntry entry = (JarEntry) e.nextElement();
+					String name = entry.getName();
+					if (!entry.isDirectory()
+							&& "META-INF/MANIFEST.MF".equals(name)) {
+						InputStream in = jar.getInputStream(entry);
+						try {
+							handler.load(in);
+							for (Entry<String, org.osgi.framework.Version> mapEntry : handler
+									.getExportedPackages().entrySet()) {
+								packVersions.put(mapEntry.getKey(),
+										WrappedDelta.toSemVersion(mapEntry
+												.getValue()));
+							}
+						} finally {
+							in.close();
 						}
 					}
 				}
+			} finally {
+				jar.close();
 			}
 		} catch (IOException ioe) {
 			throw new RuntimeException(ioe);
