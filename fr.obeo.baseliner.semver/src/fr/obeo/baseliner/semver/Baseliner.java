@@ -111,28 +111,7 @@ public class Baseliner {
 		}
 	}
 
-	// private void dumpNSCompat(Delta delta) {
-	//
-	// Delta.CompatibilityType expectedCompatibilityType =
-	// Delta.CompatibilityType
-	// .valueOf("BACKWARD_COMPATIBLE_USER");
-	// final Delta.CompatibilityType detectedCompatibilityType = delta
-	// .computeCompatibilityType();
-	// if (detectedCompatibilityType.compareTo(expectedCompatibilityType) > 0) {
-	// System.err.println("/!\\ not backward compatible user");
-	// // Not compatible.
-	// }
-	//
-	// expectedCompatibilityType = Delta.CompatibilityType
-	// .valueOf("BACKWARD_COMPATIBLE_IMPLEMENTER");
-	//
-	// if (detectedCompatibilityType.compareTo(expectedCompatibilityType) > 0) {
-	// System.err.println("/!\\ not backward compatible implementer");
-	// // Not compatible.
-	// }
-	// Dumper.dump(delta);
-	// }
-
+	
 	private List<File> findManifestFiles(File file) {
 		List<File> manifests = Lists.newArrayList();
 		for (File child : file.listFiles()) {
