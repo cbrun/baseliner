@@ -286,7 +286,7 @@
                     <url>http://download.eclipse.org/releases/luna</url>
                 </repository>
                 <repository><id>maven libs</id><layout>p2</layout>
-                    <url>file://${rootPath}/../fr.obeo.baseliner.mavenlibs/target/repository</url>
+                    <url>file:/${rootPath}/../fr.obeo.baseliner.mavenlibs/target/repository</url>
                 </repository>
             </repositories>
 	   </profile>
