@@ -32,3 +32,11 @@ Next steps
 * automatic upgrade of the bundle version based on the package versions.
 * automatic generation and update of an api-change report for each bundle.
 
+----------
+
+The code is pretty much in a draf state right now, what is notably missing :
+
+* Review of naming in the APIs
+* Proper error handling and logging
+* Proper target platform definition.
+* Import-Package versioning ;)
