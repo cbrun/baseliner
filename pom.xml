@@ -23,12 +23,17 @@
     <properties>
         <tycho-version>0.19.0</tycho-version>
 	    <tycho.scmUrl>scm:git:https://github.com/cbrun/baseliner.git</tycho.scmUrl>
+<!--Start of user code extra properties -->	    
         <rootPath>${basedir}</rootPath>
+<!--End of user code-->
     </properties>
 
 
     <modules>
+<!--Start of user code extra modules -->	    
           <module>fr.obeo.baseliner.mavenlibs</module>
+<!--End of user code-->                
+
         <!-- OSGi bundles -->
           <module>fr.obeo.baseliner.semver.lib/</module>
           <module>fr.obeo.baseliner.ui/</module>
@@ -40,6 +45,7 @@
  	    <!-- Eclipse Features -->
           <module>fr.obeo.baseliner.ide/</module>           	
           <module>fr.obeo.baseliner.ide.semver/</module>           	
+          <module>fr.obeo.baseliner.ide.bnd/</module>           	
      <!-- update sites -->
 
        <!-- global update site containing all the features -->
