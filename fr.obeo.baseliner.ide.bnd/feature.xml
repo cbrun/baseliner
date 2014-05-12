@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="fr.obeo.baseliner.ide.bnd"
-      label="BND Implementation for Baseliner"
+      label="BND Implementation for Baseliner (Prefered)"
       version="1.0.0.qualifier"
       provider-name="Obeo.fr">
 
