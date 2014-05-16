@@ -39,7 +39,8 @@ public class OSGiBundleDiff implements ApiComparator {
 
 	protected Map<String, Version> newPackageVersions = Maps.newHashMap();
 
-	public void loadNewClassesFromFolder(File projectFolder,File folder) throws RuntimeException {
+	public void loadNewClassesFromFolder(File projectFolder, File folder)
+			throws RuntimeException {
 		try {
 			if (folder.isDirectory()) {
 				for (File child : folder.listFiles()) {
@@ -50,7 +51,7 @@ public class OSGiBundleDiff implements ApiComparator {
 						wrapped.loadNewClasses(child);
 						loadManifestVersionsFromJar(newPackageVersions, child);
 					} else if (child.isDirectory()) {
-						loadNewClassesFromFolder(projectFolder,child);
+						loadNewClassesFromFolder(projectFolder, child);
 					}
 				}
 			}
@@ -160,10 +161,6 @@ public class OSGiBundleDiff implements ApiComparator {
 							oldPackageVersions.get(ns)));
 		}
 		return namespaceToDelta;
-	}
-
-	public Version getNewPackageVersion(String namespace) {
-		return newPackageVersions.get(namespace);
 	}
 
 	@Override
