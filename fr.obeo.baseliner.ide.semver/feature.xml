@@ -17,6 +17,10 @@
       [Enter License Description here.]
    </license>
 
+   <includes
+         id="fr.obeo.baseliner.ide"
+         version="0.0.0"/>
+
    <plugin
          id="fr.obeo.baseliner.semver"
          download-size="0"
