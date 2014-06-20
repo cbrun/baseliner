@@ -165,4 +165,9 @@ public class WrappedDelta implements Delta {
 		return details.toString().trim();
 	}
 
+	@Override
+	public Version getOldVersion() {
+		return toOSGIVersion(this.oldVersion);
+	}
+
 }

@@ -120,7 +120,7 @@ public class BndApiComparator implements ApiComparator {
 					 */
 					if (info.suggestedVersion != null) {
 						result.put(info.packageName, new BndDelta(
-								info.packageDiff, info.suggestedVersion));
+								info));
 					}
 
 				}

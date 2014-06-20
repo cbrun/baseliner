@@ -103,7 +103,7 @@ public class PluginBaseliner {
 					Delta packageDelta = result.get(ns);
 					if (packageDelta != null) {
 						Version inferedVersion = packageDelta
-								.getSuggestedVersion();
+								.getSuggestedVersion();						
 							System.out.println("==== "
 									+ ns
 									+ " package infered version : "									

@@ -7,5 +7,7 @@ public interface Delta {
 	Version getSuggestedVersion();
 	
 	String getDescription();
+	
+	Version getOldVersion();
 
 }
