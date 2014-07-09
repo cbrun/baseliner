@@ -8,15 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.osgi.framework.Version;
-
 import aQute.bnd.differ.Baseline;
 import aQute.bnd.differ.Baseline.Info;
 import aQute.bnd.differ.DiffPluginImpl;
 import aQute.bnd.osgi.Instructions;
 import aQute.bnd.osgi.Jar;
+import aQute.bnd.osgi.Resource;
 import aQute.service.reporter.Reporter;
-import aQute.service.reporter.Report.Location;
 import fr.obeo.baseliner.ApiComparator;
 import fr.obeo.baseliner.Delta;
 
@@ -88,7 +86,23 @@ public class BndApiComparator implements ApiComparator {
 	public void loadNewClassesFromFolder(File projectfolder, File folder)
 			throws RuntimeException {
 		try {
-			newJar = new Jar(projectfolder);
+			newJar = new Jar(projectfolder) {
+
+				@Override
+				public boolean putResource(String path, Resource resource,
+						boolean override) {
+					/*
+					 * we override the resource path given to "simulate" an
+					 * actual jar. TODO : use the build.properties to do that
+					 * reliably.
+					 */
+					if (path.startsWith("bin/")) {
+						path = path.substring(4);
+					}
+					return super.putResource(path, resource, override);
+				}
+
+			};
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -114,13 +128,11 @@ public class BndApiComparator implements ApiComparator {
 				Set<Info> infos = baseline.baseline(newJar, oldJar,
 						new Instructions("*"));
 				for (Info info : infos) {
-					/*
-					 * we might have a suggested version which is null in the
-					 * case of packages which got deleted.
-					 */
-					if (info.suggestedVersion != null) {
-						result.put(info.packageName, new BndDelta(
-								info));
+					if (info.suggestedVersion != null
+							&& info.newerVersion != null
+							&& info.suggestedVersion
+									.compareTo(info.newerVersion) != 0) {
+						result.put(info.packageName, new BndDelta(info));
 					}
 
 				}
