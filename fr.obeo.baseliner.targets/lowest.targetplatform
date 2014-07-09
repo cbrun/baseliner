@@ -1,0 +1,16 @@
+target "Lowest Bounds For Baseliner"
+
+location "http://download.eclipse.org/eclipse/updates/3.8" {
+	org.eclipse.pde.feature.group [3.8.0,4.0.0)
+	org.eclipse.platform.feature.group [3.8.0,4.0.0)
+	org.eclipse.jdt.feature.group [3.8.0,4.0.0)
+}
+
+location "http://bndtools-updates.s3.amazonaws.com/" {
+	biz.aQute.bndlib
+}
+
+location "http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/" {
+	com.google.guava [15.0.0,16.0.0)
+	org.kohsuke.args4j [2.0.12,3.0.0)
+}

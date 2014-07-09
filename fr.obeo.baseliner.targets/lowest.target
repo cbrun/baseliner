@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde?>
+<!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
+<target name="Lowest Bounds For Baseliner" sequenceNumber="1404913749">
+  <locations>
+    <location includeMode="slicer" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.pde.feature.group" version="3.8.2.v20130116-091538-7c7wFj0FFt6Zr9bc77L7JFNNa"/>
+      <unit id="org.eclipse.platform.feature.group" version="3.8.1.v20130118-180812-9jF7oIBFG8eU2pim-VbIlTuQjY0RWWK3x-bv4I"/>
+      <unit id="org.eclipse.jdt.feature.group" version="3.8.2.v20130116-090414-8-8nFu3FNOfwKLRttdWQJ-2z-_83"/>
+      <repository location="http://download.eclipse.org/eclipse/updates/3.8"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="biz.aQute.bndlib" version="2.3.0.201405100607"/>
+      <repository location="http://bndtools-updates.s3.amazonaws.com/"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="com.google.guava" version="15.0.0.v201403281430"/>
+      <unit id="org.kohsuke.args4j" version="2.0.21.v201301150030"/>
+      <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
+    </location>
+  </locations>
+</target>
