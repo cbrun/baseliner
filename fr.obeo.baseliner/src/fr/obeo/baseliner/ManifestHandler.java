@@ -58,6 +58,9 @@ public class ManifestHandler {
 			mapHeaders = ManifestElement.parseBundleManifest(in, headers);
 			bundleVersion = mapHeaders.get(Constants.BUNDLE_VERSION);
 			symbolicName = mapHeaders.get(Constants.BUNDLE_SYMBOLICNAME);
+			if (symbolicName.indexOf(";")!= -1) {
+				symbolicName = symbolicName.substring(0,symbolicName.indexOf(";"));
+			}
 			ManifestElement[] packages = ManifestElement.parseHeader(
 					Constants.EXPORT_PACKAGE,
 					mapHeaders.get(Constants.EXPORT_PACKAGE));
