@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.osgi.framework.Version;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 
 public class PluginBaseliner {
 
@@ -59,18 +60,18 @@ public class PluginBaseliner {
 	public PluginBaseliner() {
 	}
 
-	public String updateManifestFile(File manifestFile,
+	public Map<String, Delta> updateManifestFile(File manifestFile,
 			Collection<File> outputDirs, Collection<File> srcDirs)
 			throws FileNotFoundException {
-		String apiDiffReport = addExportedPackagesVersions(manifestFile,
+		Map<String, Delta> changes = addExportedPackagesVersions(manifestFile,
 				outputDirs);
 		cleanup.cleanup(manifestFile);
-		return apiDiffReport;
+		return changes;
 	}
 
-	private String addExportedPackagesVersions(File manifestFile,
+	private Map<String, Delta> addExportedPackagesVersions(File manifestFile,
 			Collection<File> outputDirs) throws FileNotFoundException {
-		String diffReport = null;
+		Map<String, Delta> result = Maps.newHashMap();
 		if (apiComparator.isPresent()) {
 			for (File outputDirectory : outputDirs) {
 				apiComparator.get().loadNewClassesFromFolder(outputDirectory.getParentFile(),outputDirectory);
@@ -87,7 +88,7 @@ public class PluginBaseliner {
 						apiComparator.get().loadOldClassesFromFolder(jar);
 					}
 				}
-				Map<String, Delta> result = apiComparator.get().diffByPackage();
+				result = apiComparator.get().diffByPackage();
 
 				for (Entry<String, Version> exportedPackage : manifestHandler
 						.getExportedPackages().entrySet()) {
@@ -127,7 +128,7 @@ public class PluginBaseliner {
 				}
 			}
 		}
-		return diffReport;
+		return result;
 	}
 
 }

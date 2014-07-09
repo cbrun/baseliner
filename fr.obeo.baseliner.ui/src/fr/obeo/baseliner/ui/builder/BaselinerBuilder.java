@@ -11,7 +11,6 @@ import java.util.Map;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -22,12 +21,17 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
+import fr.obeo.baseliner.ApiChangeLog;
+import fr.obeo.baseliner.Delta;
+import fr.obeo.baseliner.MEMApiChangeLog;
 import fr.obeo.baseliner.PluginBaseliner;
 import fr.obeo.baseliner.ui.BaselinerUIPlugin;
 
 public class BaselinerBuilder extends IncrementalProjectBuilder {
 
 	public static final String BUILDER_ID = "fr.obeo.baseliner.ui.BaslinerBuilder";
+
+	public ApiChangeLog changeLog = new MEMApiChangeLog();
 
 	/*
 	 * (non-Javadoc)
@@ -37,16 +41,16 @@ public class BaselinerBuilder extends IncrementalProjectBuilder {
 	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 			throws CoreException {
-//		if (kind == FULL_BUILD) {
-			fullBuild(monitor);
-//		} else {
-//			IResourceDelta delta = getDelta(getProject());
-//			if (delta == null) {
-//				fullBuild(monitor);
-//			} else {
-////				incrementalBuild(delta, monitor);
-//			}
-//		}
+		// if (kind == FULL_BUILD) {
+		fullBuild(monitor);
+		// } else {
+		// IResourceDelta delta = getDelta(getProject());
+		// if (delta == null) {
+		// fullBuild(monitor);
+		// } else {
+		// // incrementalBuild(delta, monitor);
+		// }
+		// }
 		return null;
 	}
 
@@ -74,11 +78,15 @@ public class BaselinerBuilder extends IncrementalProjectBuilder {
 						&& hasNature(BaselinerConstants.PLUGIN_NATURE_ID)
 						&& baseliner != null) {
 					IJavaProject javaProject = JavaCore.create(getProject());
-					baseliner.updateManifestFile(new File(manifestFile
-							.getLocation().toOSString()),
+					Map<String, Delta> changes = baseliner.updateManifestFile(
+							new File(manifestFile.getLocation().toOSString()),
 							declareJavaOutputFolders(baseliner, javaProject),
 							Collections.EMPTY_LIST);
 					manifestFile.refreshLocal(1, monitor);
+					if (changeLog != null) {
+						changeLog.aggregate(getProject().getName(), changes);
+					}
+
 				}
 			}
 		} catch (CoreException e) {
