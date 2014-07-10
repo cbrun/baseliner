@@ -110,9 +110,9 @@ public class BndApiComparator implements ApiComparator {
 	}
 
 	@Override
-	public void loadOldClassesFromFolder(File folder) throws RuntimeException {
+	public void loadOldClassesFromFolder(File jarFile) throws RuntimeException {
 		try {
-			oldJar = new Jar(folder);
+			oldJar = new Jar(jarFile);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -124,7 +124,7 @@ public class BndApiComparator implements ApiComparator {
 		Map<String, Delta> result = new HashMap<String, Delta>();
 		try {
 			if (oldJar != null && newJar != null) {
-				Baseline baseline = new Baseline(reporter, new DiffPluginImpl());
+				Baseline baseline = new Baseline(reporter, CachedDiffer.GLOBAL_DIFFER);
 				Set<Info> infos = baseline.baseline(newJar, oldJar,
 						new Instructions("*"));
 				for (Info info : infos) {

@@ -12,7 +12,10 @@ Import-Package: aQute.bnd.differ;version="1.0.0",
  aQute.bnd.version,
  aQute.service.reporter;version="1.0.1",
  fr.obeo.baseliner,
- org.osgi.framework
+ org.osgi.framework,
+ com.google.common.hash,
+ com.google.common.io,
+ com.google.common.collect
 Service-Component: OSGI-INF/apicomparator.xml
 Require-Bundle: org.eclipse.equinox.util,
  org.eclipse.equinox.ds,
