@@ -50,12 +50,14 @@ public class ToggleNatureHandler extends AbstractHandler {
 				}
 
 			} else {
-				nature.configure();
 				// Add the nature
 				String[] newNatures = new String[natures.length + 1];
 				System.arraycopy(natures, 0, newNatures, 1, natures.length);
 				newNatures[0] = BaselinerNature.NATURE_ID;
 				description.setNatureIds(newNatures);
+				project.setDescription(description,
+						new NullProgressMonitor());
+				nature.configure();
 			}
 
 		} catch (CoreException e) {
