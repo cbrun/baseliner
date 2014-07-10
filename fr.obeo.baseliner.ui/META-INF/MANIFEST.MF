@@ -16,4 +16,7 @@ Require-Bundle: org.eclipse.core.resources,
 Bundle-Activator: fr.obeo.baseliner.ui.BaselinerUIPlugin
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
+Import-Package: com.google.common.base,
+ com.google.common.hash;version="15.0.0",
+ com.google.common.io;version="15.0.0"
 

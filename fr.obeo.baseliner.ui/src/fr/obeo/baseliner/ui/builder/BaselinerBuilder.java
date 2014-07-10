@@ -11,6 +11,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -21,9 +22,14 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 
+import com.google.common.base.Charsets;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
+
 import fr.obeo.baseliner.ApiChangeLog;
-import fr.obeo.baseliner.Delta;
 import fr.obeo.baseliner.MEMApiChangeLog;
+import fr.obeo.baseliner.ManifestChanges;
 import fr.obeo.baseliner.PluginBaseliner;
 import fr.obeo.baseliner.ui.BaselinerUIPlugin;
 
@@ -33,6 +39,8 @@ public class BaselinerBuilder extends IncrementalProjectBuilder {
 
 	public ApiChangeLog changeLog = new MEMApiChangeLog();
 
+	private HashFunction hashFunction = Hashing.goodFastHash(14);
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -41,16 +49,21 @@ public class BaselinerBuilder extends IncrementalProjectBuilder {
 	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 			throws CoreException {
-		// if (kind == FULL_BUILD) {
-		fullBuild(monitor);
-		// } else {
-		// IResourceDelta delta = getDelta(getProject());
-		// if (delta == null) {
-		// fullBuild(monitor);
-		// } else {
-		// // incrementalBuild(delta, monitor);
-		// }
-		// }
+		if (kind == FULL_BUILD) {
+			fullBuild(monitor);
+		} else {
+			IResourceDelta delta = getDelta(getProject());
+			if (delta == null) {
+				fullBuild(monitor);
+			} else {
+				BuildTriggerPolicyFromDelta processor = new BuildTriggerPolicyFromDelta(
+						hashFunction, lastManifestHash);
+				delta.accept(processor);
+				if (processor.shouldRebuild()) {
+					fullBuild(monitor);
+				}
+			}
+		}
 		return null;
 	}
 
@@ -68,6 +81,8 @@ public class BaselinerBuilder extends IncrementalProjectBuilder {
 	 */
 	String PLUGIN_NATURE_ID = "org.eclipse.pde.PluginNature"; //$NON-NLS-1$
 
+	private HashCode lastManifestHash;
+
 	protected void fullBuild(final IProgressMonitor monitor)
 			throws CoreException {
 		try {
@@ -78,13 +93,18 @@ public class BaselinerBuilder extends IncrementalProjectBuilder {
 						&& hasNature(BaselinerConstants.PLUGIN_NATURE_ID)
 						&& baseliner != null) {
 					IJavaProject javaProject = JavaCore.create(getProject());
-					Map<String, Delta> changes = baseliner.updateManifestFile(
+					ManifestChanges change = baseliner.updateManifestFile(
 							new File(manifestFile.getLocation().toOSString()),
 							declareJavaOutputFolders(baseliner, javaProject),
 							Collections.EMPTY_LIST);
+					if (change.getFileContent().isPresent()) {
+						lastManifestHash = hashFunction.hashString(change
+								.getFileContent().get(), Charsets.UTF_8);
+					}
 					manifestFile.refreshLocal(1, monitor);
 					if (changeLog != null) {
-						changeLog.aggregate(getProject().getName(), changes);
+						changeLog.aggregate(getProject().getName(),
+								change.getChanges());
 					}
 
 				}
@@ -145,9 +165,4 @@ public class BaselinerBuilder extends IncrementalProjectBuilder {
 		return false;
 	}
 
-	// protected void incrementalBuild(IResourceDelta delta,
-	// IProgressMonitor monitor) throws CoreException {
-	// // the visitor does the work.
-	// delta.accept(new SampleDeltaVisitor(new XMLChecker()));
-	// }
 }

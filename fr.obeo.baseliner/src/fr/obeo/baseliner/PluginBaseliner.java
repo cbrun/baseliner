@@ -60,21 +60,22 @@ public class PluginBaseliner {
 	public PluginBaseliner() {
 	}
 
-	public Map<String, Delta> updateManifestFile(File manifestFile,
+	public ManifestChanges updateManifestFile(File manifestFile,
 			Collection<File> outputDirs, Collection<File> srcDirs)
 			throws FileNotFoundException {
-		Map<String, Delta> changes = addExportedPackagesVersions(manifestFile,
+		ManifestChanges result = addExportedPackagesVersions(manifestFile,
 				outputDirs);
 		cleanup.cleanup(manifestFile);
-		return changes;
+		return result;
 	}
 
-	private Map<String, Delta> addExportedPackagesVersions(File manifestFile,
+	private ManifestChanges addExportedPackagesVersions(File manifestFile,
 			Collection<File> outputDirs) throws FileNotFoundException {
 		Map<String, Delta> result = Maps.newHashMap();
 		if (apiComparator.isPresent()) {
 			for (File outputDirectory : outputDirs) {
-				apiComparator.get().loadNewClassesFromFolder(outputDirectory.getParentFile(),outputDirectory);
+				apiComparator.get().loadNewClassesFromFolder(
+						outputDirectory.getParentFile(), outputDirectory);
 			}
 			FileInputStream fileInputStream = new FileInputStream(manifestFile);
 			try {
@@ -104,12 +105,11 @@ public class PluginBaseliner {
 					Delta packageDelta = result.get(ns);
 					if (packageDelta != null) {
 						Version inferedVersion = packageDelta
-								.getSuggestedVersion();						
-							System.out.println("==== "
-									+ ns
-									+ " package infered version : "									
-									+ inferedVersion);
-							// dumpNSCompat(result.get(ns));
+								.getSuggestedVersion();
+						System.out.println("==== " + ns
+								+ " package infered version : "
+								+ inferedVersion);
+						// dumpNSCompat(result.get(ns));
 						manifestHandler.setPackageVersion(ns, inferedVersion);
 					} else {
 						// System.out.println("no delta.");
@@ -117,7 +117,9 @@ public class PluginBaseliner {
 					// dumpNSCompat(result, ns);
 				}
 
-				manifestHandler.update(manifestFile);
+				Optional<String> newContent = manifestHandler
+						.update(manifestFile);
+				return new ManifestChanges(result, newContent);
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
@@ -128,7 +130,7 @@ public class PluginBaseliner {
 				}
 			}
 		}
-		return result;
+		return ManifestChanges.NOCHANGE;
 	}
 
 }

@@ -33,7 +33,7 @@ Next steps
 * automatic rule always export all the packages with the "internal" tag with explicit opt-in.
 * automatic upgrade of the bundle version based on the package versions.
 * automatic generation and update of an api-change report for each bundle.
-* Avoid the self triggering of the builder when Manifest.MF is changed by the builder
+* ~~Avoid the self triggering of the builder when Manifest.MF is changed by the builder~~
 * Profile and assess performance overhead when 100 projects are in the workspace
 * Self provisionning of API baselines based on per-project configuration.
 

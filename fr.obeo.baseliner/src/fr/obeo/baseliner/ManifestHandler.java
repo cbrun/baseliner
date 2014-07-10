@@ -16,11 +16,15 @@ import org.osgi.framework.Version;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.base.Splitter;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 
 public class ManifestHandler {
@@ -137,15 +141,18 @@ public class ManifestHandler {
 		}
 	}
 
-	public void update(File manifestFile) throws IOException {
+	public Optional<String> update(File manifestFile) throws IOException {
 		if (exportedPackages.keySet().size() > 0) {
 			String originalContent = Files.toString(manifestFile,
 					Charsets.UTF_8);
 			String updatedFileContent = getMergedManifest(originalContent);
 			if (!originalContent.equals(updatedFileContent)) {
 				Files.write(updatedFileContent, manifestFile, Charsets.UTF_8);
+				return Optional.of(updatedFileContent);
 			}
+			return Optional.of(originalContent);
 		}
+		return Optional.absent();
 	}
 
 	public String getMergedManifest(String originalContent) {
