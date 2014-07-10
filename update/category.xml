@@ -4,9 +4,6 @@
    <feature id="fr.obeo.baseliner.ide" version="1.0.0.qualifier">
       <category name="fr.obeo"/>
    </feature>
-   <feature id="fr.obeo.baseliner.ide.semver" version="1.0.0.qualifier">
-      <category name="fr.obeo"/>
-   </feature>
    <feature id="fr.obeo.baseliner.ide.bnd" version="1.0.0.qualifier">
       <category name="fr.obeo"/>
    </feature>
@@ -19,9 +16,6 @@
       </description>
    </category-def>
    <feature id="fr.obeo.baseliner.ide.source" version="1.0.0.qualifier">
-      <category name="fr.obeo.source"/>
-   </feature>
-   <feature id="fr.obeo.baseliner.ide.semver.source" version="1.0.0.qualifier">
       <category name="fr.obeo.source"/>
    </feature>
    <feature id="fr.obeo.baseliner.ide.bnd.source" version="1.0.0.qualifier">
