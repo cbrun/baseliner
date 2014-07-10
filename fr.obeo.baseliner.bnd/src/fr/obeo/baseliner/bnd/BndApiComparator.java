@@ -86,23 +86,7 @@ public class BndApiComparator implements ApiComparator {
 	public void loadNewClassesFromFolder(File projectfolder, File folder)
 			throws RuntimeException {
 		try {
-			newJar = new Jar(projectfolder) {
-
-				@Override
-				public boolean putResource(String path, Resource resource,
-						boolean override) {
-					/*
-					 * we override the resource path given to "simulate" an
-					 * actual jar. TODO : use the build.properties to do that
-					 * reliably.
-					 */
-					if (path.startsWith("bin/")) {
-						path = path.substring(4);
-					}
-					return super.putResource(path, resource, override);
-				}
-
-			};
+			newJar = new WorkspaceJar(projectfolder);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -124,7 +108,8 @@ public class BndApiComparator implements ApiComparator {
 		Map<String, Delta> result = new HashMap<String, Delta>();
 		try {
 			if (oldJar != null && newJar != null) {
-				Baseline baseline = new Baseline(reporter, CachedDiffer.GLOBAL_DIFFER);
+				Baseline baseline = new Baseline(reporter,
+						CachedDiffer.GLOBAL_DIFFER);
 				Set<Info> infos = baseline.baseline(newJar, oldJar,
 						new Instructions("*"));
 				for (Info info : infos) {
