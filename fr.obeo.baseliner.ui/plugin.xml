@@ -23,7 +23,7 @@
          </run>
       </runtime>
       <builder
-            id="fr.obeo.baseliner.ui.BaslinerBuilder">
+            id="fr.obeo.baseliner.ui.BaselinerBuilder">
       </builder>
    </extension>
    
