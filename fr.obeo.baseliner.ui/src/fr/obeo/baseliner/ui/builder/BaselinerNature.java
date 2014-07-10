@@ -11,7 +11,7 @@ public class BaselinerNature implements IProjectNature {
 	/**
 	 * ID of this project nature
 	 */
-	public static final String NATURE_ID = "fr.obeo.baseliner.ui.BaslinerNature";
+	public static final String NATURE_ID = "fr.obeo.baseliner.ui.BaselinerNature";
 
 	private IProject project;
 
@@ -25,7 +25,8 @@ public class BaselinerNature implements IProjectNature {
 		ICommand[] commands = desc.getBuildSpec();
 
 		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(BaselinerBuilder.BUILDER_ID)) {
+			if (commands[i].getBuilderName()
+					.equals(BaselinerBuilder.BUILDER_ID)) {
 				return;
 			}
 		}
@@ -48,13 +49,14 @@ public class BaselinerNature implements IProjectNature {
 		IProjectDescription description = getProject().getDescription();
 		ICommand[] commands = description.getBuildSpec();
 		for (int i = 0; i < commands.length; ++i) {
-			if (commands[i].getBuilderName().equals(BaselinerBuilder.BUILDER_ID)) {
+			if (commands[i].getBuilderName()
+					.equals(BaselinerBuilder.BUILDER_ID)) {
 				ICommand[] newCommands = new ICommand[commands.length - 1];
 				System.arraycopy(commands, 0, newCommands, 0, i);
 				System.arraycopy(commands, i + 1, newCommands, i,
 						commands.length - i - 1);
 				description.setBuildSpec(newCommands);
-				project.setDescription(description, null);			
+				project.setDescription(description, null);
 				return;
 			}
 		}
@@ -72,7 +74,9 @@ public class BaselinerNature implements IProjectNature {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.core.resources.IProjectNature#setProject(org.eclipse.core.resources.IProject)
+	 * @see
+	 * org.eclipse.core.resources.IProjectNature#setProject(org.eclipse.core
+	 * .resources.IProject)
 	 */
 	public void setProject(IProject project) {
 		this.project = project;

@@ -3,7 +3,7 @@
 <plugin>
 
    <extension
-         id="BaslinerBuilder"
+         id="BaselinerBuilder"
          name="Semantic Versioning Builder for Manifest.MF"
          point="org.eclipse.core.resources.builders">
       <builder
@@ -14,7 +14,7 @@
       </builder>
    </extension>
    <extension
-         id="BaslinerNature"
+         id="BaselinerNature"
          name="Semantic Versioning Nature"
          point="org.eclipse.core.resources.natures">
       <runtime>
@@ -26,21 +26,74 @@
             id="fr.obeo.baseliner.ui.BaslinerBuilder">
       </builder>
    </extension>
+   
    <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            adaptable="true"
-            objectClass="org.eclipse.core.resources.IProject"
-            nameFilter="*"
-            id="fr.obeo.baseliner.ui.contribution1">
-         <action
-               label="Enable/Disable Automatic Versioning"
-               class="fr.obeo.baseliner.ui.builder.ToggleNatureAction"
-               menubarPath="additions"
-               enablesFor="+"
-               id="fr.obeo.baseliner.ui.addRemoveNatureAction">
-         </action>
-      </objectContribution>
-   </extension>
-
+         point="org.eclipse.ui.commands">
+		<command
+		        categoryId="org.eclipse.ui.category.file"
+		        defaultHandler="fr.obeo.baseliner.ui.builder.ToggleNatureHandler"
+		        id="fr.obeo.baseliner.ui.addRemoveNatureCommand"
+		        name="Enable or Disable Semantic Versioning">
+		</command>		
+	</extension>
+	
+	
+	 <extension point="org.eclipse.ui.menus">
+	<menuContribution
+           locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">
+		<command
+	    	commandId="fr.obeo.baseliner.ui.addRemoveNatureCommand"
+	        label="Enable Semantic Versioning"
+	        style="push">
+	        <visibleWhen
+            	checkEnabled="false">
+				<iterate
+                	ifEmpty="false"
+                    operator="and">
+					<adapt
+                    	type="org.eclipse.core.resources.IProject">
+						<and>
+						<not>
+							<test
+	                            property="org.eclipse.core.resources.projectNature"
+	                                value="fr.obeo.baseliner.ui.BaselinerNature">
+							</test>
+						</not>
+							<test
+                              property="org.eclipse.core.resources.open"
+                              value="true">
+							</test>
+						</and>
+					</adapt>
+				</iterate>
+			</visibleWhen> 
+		</command>
+		<command
+	    	commandId="fr.obeo.baseliner.ui.addRemoveNatureCommand"
+	        label="Disable Semantic Versioning"
+	        style="push">
+	        <visibleWhen
+            	checkEnabled="false">
+				<iterate
+                	ifEmpty="false"
+                    operator="and">
+					<adapt
+                    	type="org.eclipse.core.resources.IProject">
+						<and>						
+							<test
+	                            property="org.eclipse.core.resources.projectNature"
+	                                value="fr.obeo.baseliner.ui.BaselinerNature">
+							</test>						
+							<test
+                              property="org.eclipse.core.resources.open"
+                              value="true">
+							</test>
+						</and>
+					</adapt>
+				</iterate>
+			</visibleWhen> 
+		</command>
+	</menuContribution>
+  </extension> 
+     
 </plugin>

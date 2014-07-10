@@ -35,7 +35,7 @@ import fr.obeo.baseliner.ui.BaselinerUIPlugin;
 
 public class BaselinerBuilder extends IncrementalProjectBuilder {
 
-	public static final String BUILDER_ID = "fr.obeo.baseliner.ui.BaslinerBuilder";
+	public static final String BUILDER_ID = "fr.obeo.baseliner.ui.BaselinerBuilder";
 
 	public ApiChangeLog changeLog = new MEMApiChangeLog();
 
