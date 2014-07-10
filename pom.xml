@@ -289,9 +289,6 @@
                 <repository><id>eclipse</id><layout>p2</layout>
                     <url>http://download.eclipse.org/releases/luna</url>
                 </repository>
-                <repository><id>maven libs</id><layout>p2</layout>
-                    <url>file://${rootPath}/../fr.obeo.baseliner.mavenlibs/target/repository</url>
-                </repository>
                 <repository><id>bndtools</id><layout>p2</layout>
                     <url>http://bndtools-updates.s3.amazonaws.com/</url>
                 </repository>
