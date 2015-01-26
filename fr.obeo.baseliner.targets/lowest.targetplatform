@@ -1,9 +1,32 @@
 target "Lowest Bounds For Baseliner"
 
-location "http://download.eclipse.org/eclipse/updates/3.8" {
-	org.eclipse.pde.feature.group [3.8.0,4.0.0)
-	org.eclipse.platform.feature.group [3.8.0,4.0.0)
-	org.eclipse.jdt.feature.group [3.8.0,4.0.0)
+//include "http://git.eclipse.org/c/simrel/org.eclipse.simrel.build.git/plain/emft-eef.b3aggrcon"
+
+//include "http://git.eclipse.org/c/simrel/org.eclipse.simrel.build.git/plain/emf-cdo.b3aggrcon?id=KeplerSR1"
+
+location "http://download.eclipse.org/eclipse/updates/4.4/R-4.4.1-201409250400" {
+	org.eclipse.equinox.common [3.6.200,4.0.0)
+	org.eclipse.equinox.ds [1.4.200,2.0.0)
+	org.eclipse.equinox.registry
+	org.eclipse.osgi.services [3.4.0,4.0.0)
+	org.eclipse.equinox.util
+	org.eclipse.osgi
+	org.eclipse.equinox.p2.artifact.repository
+	org.eclipse.equinox.p2.metadata.repository
+	org.eclipse.pde.api.tools
+	org.eclipse.core.runtime [3.10.0,4.0.0)
+	org.eclipse.core.commands	
+	org.eclipse.ltk.core.refactoring
+	org.eclipse.core.resources
+	org.eclipse.pde.core
+	org.eclipse.pde.ui
+	org.eclipse.ui
+	org.eclipse.ui.workbench
+	org.eclipse.ui.ide
+	org.eclipse.jface
+	org.eclipse.jdt
+	org.eclipse.jdt.core
+	org.junit
 }
 
 location "http://bndtools-updates.s3.amazonaws.com/" {
