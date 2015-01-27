@@ -45,6 +45,14 @@ public class Baseliner {
 
 	public ApiChangeLog changeLog = new MEMApiChangeLog();
 
+	public void setChangeLog(ApiChangeLog changeLog) {
+		this.changeLog = changeLog;
+	}
+
+	public Baseliner() {
+		super();
+	}
+
 	public Optional<String> doBaseline(final IProgressMonitor monitor, IProject project) throws CoreException,
 			FileNotFoundException, JavaModelException {
 		String updatedContent = null;

@@ -12,15 +12,16 @@ public class MEMApiChangeLog implements ApiChangeLog {
 	@Override
 	public void aggregate(String projectName, Map<String, Delta> changes) {
 		mergedChanges.putAll(changes);
-		System.err.println("project:" + projectName );
-		dump();
 	}
 
-	private void dump() {
+	public String report() {
+		StringBuffer result = new StringBuffer();
 		for (Entry<String, Delta> entry : mergedChanges.entrySet()) {
-			System.out.println("package :" + entry.getKey() + "[" + entry.getValue().getOldVersion() + "]" + "-> [" + entry.getValue().getSuggestedVersion() + "]");
-			System.out.println("        " + entry.getValue().getDescription());
+			result.append("\npackage :" + entry.getKey() + "[" + entry.getValue().getOldVersion() + "]" + "-> ["
+					+ entry.getValue().getSuggestedVersion() + "]");
+			result.append("\n         :" + entry.getValue().getDescription());
 		}
+		return result.toString();
 	}
 
 }
