@@ -38,6 +38,18 @@
 	</extension>
 	
 	
+	  <extension
+         point="org.eclipse.ui.commands">
+		<command
+		        categoryId="org.eclipse.ui.category.file"
+		        defaultHandler="fr.obeo.baseliner.ui.builder.BaselineProjects"
+		        id="fr.obeo.baseliner.ui.baselineProjectsCommand"
+		        name="Basline project(s)">
+		</command>		
+	</extension>
+	
+	
+	
 	 <extension point="org.eclipse.ui.menus">
 	<menuContribution
            locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">
@@ -89,6 +101,31 @@
                               value="true">
 							</test>
 						</and>
+					</adapt>
+				</iterate>
+			</visibleWhen> 
+		</command>
+	</menuContribution>
+  </extension> 
+     
+      <extension point="org.eclipse.ui.menus">
+	<menuContribution
+           locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">
+		<command
+	    	commandId="fr.obeo.baseliner.ui.baselineProjectsCommand"
+	        label="Baseline projects"
+	        style="push">
+	        <visibleWhen
+            	checkEnabled="false">
+				<iterate
+                	ifEmpty="false"
+                    operator="and">
+					<adapt
+                    	type="org.eclipse.core.resources.IProject">
+							<test
+                              property="org.eclipse.core.resources.open"
+                              value="true">
+							</test>
 					</adapt>
 				</iterate>
 			</visibleWhen> 
