@@ -17,9 +17,10 @@ public class MEMApiChangeLog implements ApiChangeLog {
 	public String report() {
 		StringBuffer result = new StringBuffer();
 		for (Entry<String, Delta> entry : mergedChanges.entrySet()) {
-			result.append("\npackage :" + entry.getKey() + "[" + entry.getValue().getOldVersion() + "]" + "-> ["
-					+ entry.getValue().getSuggestedVersion() + "]");
-			result.append("\n         :" + entry.getValue().getDescription());
+			result.append("\n\nh4. Changes in @" + entry.getKey() + "@\n\n");
+//			result.append("\n * The " + entry.getKey() + "[" + entry.getValue().getOldVersion() + "]" + "-> ["
+//					+ entry.getValue().getSuggestedVersion() + "]");
+			result.append(entry.getValue().getDescription());
 		}
 		return result.toString();
 	}

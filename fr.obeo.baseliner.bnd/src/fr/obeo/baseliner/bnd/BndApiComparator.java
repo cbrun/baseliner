@@ -83,8 +83,7 @@ public class BndApiComparator implements ApiComparator {
 	};
 
 	@Override
-	public void loadNewClassesFromFolder(File projectfolder, File folder)
-			throws RuntimeException {
+	public void loadNewClassesFromFolder(File projectfolder, File folder) throws RuntimeException {
 		try {
 			newJar = new WorkspaceJar(projectfolder);
 		} catch (IOException e) {
@@ -108,17 +107,13 @@ public class BndApiComparator implements ApiComparator {
 		Map<String, Delta> result = new HashMap<String, Delta>();
 		try {
 			if (oldJar != null && newJar != null) {
-				Baseline baseline = new Baseline(reporter,
-						CachedDiffer.GLOBAL_DIFFER);
-				Set<Info> infos = baseline.baseline(newJar, oldJar,
-						new Instructions("*"));
+				Baseline baseline = new Baseline(reporter, CachedDiffer.GLOBAL_DIFFER);
+				Set<Info> infos = baseline.baseline(newJar, oldJar, new Instructions("*"));
 				for (Info info : infos) {
-					if (info.suggestedVersion != null
-							&& info.newerVersion != null
-							&& info.suggestedVersion
-									.compareTo(info.newerVersion) != 0) {
-						result.put(info.packageName, new BndDelta(info));
-					}
+					if (info.suggestedVersion != null)
+						if (info.olderVersion == null || info.suggestedVersion.compareTo(info.olderVersion) != 0) {
+							result.put(info.packageName, new BndDelta(info));
+						}
 
 				}
 			}

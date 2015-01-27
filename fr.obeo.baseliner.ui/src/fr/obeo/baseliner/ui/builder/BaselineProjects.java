@@ -47,7 +47,7 @@ public class BaselineProjects extends AbstractHandler {
 			MEMApiChangeLog changePerProject = new MEMApiChangeLog();
 			baseliner.setChangeLog(changePerProject);
 			baseliner.doBaseline(monitor, iProject);
-			IFile changeFile = iProject.getFile("api_changes.txt");
+			IFile changeFile = iProject.getFile("api_changes.textile");
 			// FIXME encoding ! ! Don't use getBytes
 			InputStream is = null;
 			try {

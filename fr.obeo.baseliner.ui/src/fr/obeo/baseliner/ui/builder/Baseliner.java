@@ -62,15 +62,16 @@ public class Baseliner {
 			if (hasNature(project, BaselinerConstants.JAVA_NATURE_ID)
 					&& hasNature(project, BaselinerConstants.PLUGIN_NATURE_ID) && baseliner != null) {
 				IJavaProject javaProject = JavaCore.create(project);
-				ManifestChanges change = baseliner.updateManifestFile(
-						new File(manifestFile.getLocation().toOSString()),
-						declareJavaOutputFolders(baseliner, javaProject), Collections.EMPTY_LIST);
-				if (change.getFileContent().isPresent()) {
-					updatedContent = change.getFileContent().get();
-				}
-				manifestFile.refreshLocal(1, monitor);
-				if (changeLog != null) {
-					changeLog.aggregate(project.getName(), change.getChanges());
+				if (!monitor.isCanceled()) {
+					ManifestChanges change = baseliner.updateManifestFile(new File(manifestFile.getLocation()
+							.toOSString()), declareJavaOutputFolders(baseliner, javaProject), Collections.EMPTY_LIST);
+					if (change.getFileContent().isPresent()) {
+						updatedContent = change.getFileContent().get();
+					}
+					manifestFile.refreshLocal(1, monitor);
+					if (changeLog != null) {
+						changeLog.aggregate(project.getName(), change.getChanges());
+					}
 				}
 
 			}

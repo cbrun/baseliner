@@ -87,26 +87,16 @@ public class PluginBaseliner {
 
 					String ns = exportedPackage.getKey();
 
-					// System.out
-					// .println("===================================");
-					// System.err.println("delta for " + ns);
-					// System.err.println("specified version for package is "
-					// + exportedPackage.getValue());
-
 					Delta packageDelta = result.get(ns);
 					if (packageDelta != null) {
 						Version inferedVersion = packageDelta.getSuggestedVersion();
-						System.out.println("==== " + ns + " package infered version : " + inferedVersion);
-						// dumpNSCompat(result.get(ns));
 						manifestHandler.setPackageVersion(ns, inferedVersion);
 					} else {
-						// System.out.println("no delta.");
 					}
-					// dumpNSCompat(result, ns);
 				}
-				
+
 				manifestHandler.setNewBundleVersion(manifestHandler.getHighestExportedVersion());
-				
+
 				Optional<String> newContent = manifestHandler.update(manifestFile);
 				return new ManifestChanges(result, newContent);
 			} catch (IOException e) {
