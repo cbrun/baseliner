@@ -21,15 +21,12 @@ public class PluginBaseliner {
 
 	private ManifestCleanup cleanup = new NOOPManifestCleanup();
 
-	public synchronized void setBaselineJarProvider(
-			BaselinerJarProvider jarProvider) {
+	public synchronized void setBaselineJarProvider(BaselinerJarProvider jarProvider) {
 		this.jarProvider = Optional.of(jarProvider);
 	}
 
-	public synchronized void unsetBaselineJarProvider(
-			BaselinerJarProvider jarProvider) {
-		if (this.jarProvider.isPresent()
-				&& this.jarProvider.get() == jarProvider) {
+	public synchronized void unsetBaselineJarProvider(BaselinerJarProvider jarProvider) {
+		if (this.jarProvider.isPresent() && this.jarProvider.get() == jarProvider) {
 			this.jarProvider = Optional.absent();
 		}
 	}
@@ -51,8 +48,7 @@ public class PluginBaseliner {
 
 	// Method will be used by DS to unset the quote service
 	public synchronized void unsetApiComparator(ApiComparator apiComparator) {
-		if (this.apiComparator.isPresent()
-				&& this.apiComparator.get() == apiComparator) {
+		if (this.apiComparator.isPresent() && this.apiComparator.get() == apiComparator) {
 			this.apiComparator = Optional.absent();
 		}
 	}
@@ -60,30 +56,26 @@ public class PluginBaseliner {
 	public PluginBaseliner() {
 	}
 
-	public ManifestChanges updateManifestFile(File manifestFile,
-			Collection<File> outputDirs, Collection<File> srcDirs)
+	public ManifestChanges updateManifestFile(File manifestFile, Collection<File> outputDirs, Collection<File> srcDirs)
 			throws FileNotFoundException {
-		ManifestChanges result = addExportedPackagesVersions(manifestFile,
-				outputDirs);
+		ManifestChanges result = addExportedPackagesVersions(manifestFile, outputDirs);
 		cleanup.cleanup(manifestFile);
 		return result;
 	}
 
-	private ManifestChanges addExportedPackagesVersions(File manifestFile,
-			Collection<File> outputDirs) throws FileNotFoundException {
+	private ManifestChanges addExportedPackagesVersions(File manifestFile, Collection<File> outputDirs)
+			throws FileNotFoundException {
 		Map<String, Delta> result = Maps.newHashMap();
 		if (apiComparator.isPresent()) {
 			for (File outputDirectory : outputDirs) {
-				apiComparator.get().loadNewClassesFromFolder(
-						outputDirectory.getParentFile(), outputDirectory);
+				apiComparator.get().loadNewClassesFromFolder(outputDirectory.getParentFile(), outputDirectory);
 			}
 			FileInputStream fileInputStream = new FileInputStream(manifestFile);
 			try {
 				ManifestHandler manifestHandler = new ManifestHandler();
 				manifestHandler.load(fileInputStream);
 				if (jarProvider.isPresent()) {
-					File jar = jarProvider.get().getPreviousJar(
-							manifestHandler.getSymbolicName(),
+					File jar = jarProvider.get().getPreviousJar(manifestHandler.getSymbolicName(),
 							manifestHandler.getBundleVersion());
 					if (jar != null) {
 						apiComparator.get().loadOldClassesFromFolder(jar);
@@ -91,8 +83,7 @@ public class PluginBaseliner {
 				}
 				result = apiComparator.get().diffByPackage();
 
-				for (Entry<String, Version> exportedPackage : manifestHandler
-						.getExportedPackages().entrySet()) {
+				for (Entry<String, Version> exportedPackage : manifestHandler.getExportedPackages().entrySet()) {
 
 					String ns = exportedPackage.getKey();
 
@@ -104,11 +95,8 @@ public class PluginBaseliner {
 
 					Delta packageDelta = result.get(ns);
 					if (packageDelta != null) {
-						Version inferedVersion = packageDelta
-								.getSuggestedVersion();
-						System.out.println("==== " + ns
-								+ " package infered version : "
-								+ inferedVersion);
+						Version inferedVersion = packageDelta.getSuggestedVersion();
+						System.out.println("==== " + ns + " package infered version : " + inferedVersion);
 						// dumpNSCompat(result.get(ns));
 						manifestHandler.setPackageVersion(ns, inferedVersion);
 					} else {
@@ -116,9 +104,10 @@ public class PluginBaseliner {
 					}
 					// dumpNSCompat(result, ns);
 				}
-
-				Optional<String> newContent = manifestHandler
-						.update(manifestFile);
+				
+				manifestHandler.setNewBundleVersion(manifestHandler.getHighestExportedVersion());
+				
+				Optional<String> newContent = manifestHandler.update(manifestFile);
 				return new ManifestChanges(result, newContent);
 			} catch (IOException e) {
 				e.printStackTrace();
