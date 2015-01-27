@@ -16,26 +16,26 @@ import fr.obeo.baseliner.ManifestCleanup;
 public class PDEManifestCleanup implements ManifestCleanup {
 
 	private void clean(Collection<IProject> projects, IProgressMonitor pm) {
-		OrganizeManifestsProcessor organizer = new OrganizeManifestsProcessor(
-				new ArrayList(projects));
-		organizer.setCalculateUses(true);
-		organizer.setMarkInternal(true);
-		organizer.setPackageFilter("*.internal*");
-		organizer.setAddMissing(true);
-		
-		try {
-			Change change = organizer.createChange(pm);
-			change.initializeValidationData(pm);
-			if (change.isEnabled() && change.isValid(pm).isOK()) {
-				change.perform(pm);
-			}
-		} catch (OperationCanceledException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		OrganizeManifestsProcessor organizer = new OrganizeManifestsProcessor(
+//				new ArrayList(projects));
+//		organizer.setCalculateUses(true);
+//		organizer.setMarkInternal(true);
+//		organizer.setPackageFilter("*.internal*");
+//		organizer.setAddMissing(true);
+//		
+//		try {
+//			Change change = organizer.createChange(pm);
+//			change.initializeValidationData(pm);
+//			if (change.isEnabled() && change.isValid(pm).isOK()) {
+//				change.perform(pm);
+//			}
+//		} catch (OperationCanceledException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (CoreException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 
 	}
 
