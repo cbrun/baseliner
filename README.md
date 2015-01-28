@@ -1,6 +1,18 @@
 baseliner
 =========
 
+This plugin is a prototype to evaluate the following :
+- semantic versionning can be introduced at development time in a large scale team with no effort
+- it can be introduced with no friction regarding existing processes and technologies
+- the technologies which have around makes this quite cheap to setup
+
+In this spirit this tooling final goal is :
+- apply semantic versioning rules on export-packages automatically
+- no performance overhead at development time
+- the capability to setup and share a baseline description for a whole team (no manual step⁾
+- provide awareness of the changes compatibility for the developper
+- do not replace existing toolchains like Tycho or PDE.
+
 Eclipse Plugins to enrich MANIFEST.MF's export packages with computed versions
 
 It automatically updates exported packages versions based on the current API Baseline.
@@ -8,18 +20,20 @@ This tool reuses the baseline defined in the Eclipse preferences.
 
 If no package version was specified, the current bundle-version is taken.
 
+Right now it is using BND (https://github.com/bndtools/bnd) to do the actual computation of semantic version to use
 
-Right now it is using https://github.com/jeluard/semantic-versioning to do the actual computation of diff but that part 
-is decoupled through OSGi Declarative Services. This means one could provide another implementation quite easily.
-
+Medium term, the PDE baseline will not be used anymore as it is really inconvenient to deploy and update within a team.
 
 ----------
 
 Giving it a try :
 - install it in your Eclipse IDE, update site is here : http://marketplace.obeonetwork.com/updates/nightly/baseliner/repository
-- Right click on a project then click on the action "Enable/Disable Automatic Versioning"
 - Set an API Baseline if none is set yet : http://help.eclipse.org/kepler/index.jsp?topic=%2Forg.eclipse.pde.doc.user%2Ftasks%2Fapi_tooling_baseline.htm
+- Right click on a project then click on the action "Configure/baseline projects"
 - Enjoy
+
+An incremental builder is available too but even if it's quite fast compared to the PDE api tooling, it could still be improved quite a lot
+on large project once I have the proper APIs in BNDlib.
 
 
 ----------
