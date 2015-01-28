@@ -24,7 +24,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Files;
 
-public class ManifestHandler {
+public class ManifestRewriter {
 
 	private String bundleVersion;
 
@@ -38,7 +38,7 @@ public class ManifestHandler {
 
 	private Multimap<String, String> extraExtensions = LinkedHashMultimap.create();
 
-	public ManifestHandler() {
+	public ManifestRewriter() {
 
 	}
 
@@ -226,6 +226,9 @@ public class ManifestHandler {
 					highestVersion = packageVersion;
 				}
 			}
+		}
+		if (this.bundleVersion != null && this.bundleVersion.endsWith(".qualifier")) {
+			highestVersion = new Version(highestVersion.toString() + ".qualifier");
 		}
 		return highestVersion;
 	}

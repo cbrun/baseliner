@@ -8,10 +8,13 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.osgi.framework.Version;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 
 public class PluginBaseliner {
 
@@ -72,7 +75,7 @@ public class PluginBaseliner {
 			}
 			FileInputStream fileInputStream = new FileInputStream(manifestFile);
 			try {
-				ManifestHandler manifestHandler = new ManifestHandler();
+				ManifestRewriter manifestHandler = new ManifestRewriter();
 				manifestHandler.load(fileInputStream);
 				if (jarProvider.isPresent()) {
 					File jar = jarProvider.get().getPreviousJar(manifestHandler.getSymbolicName(),
@@ -91,14 +94,35 @@ public class PluginBaseliner {
 					if (packageDelta != null) {
 						Version inferedVersion = packageDelta.getSuggestedVersion();
 						manifestHandler.setPackageVersion(ns, inferedVersion);
-					} else {
-					}
+					} 
 				}
 
-				manifestHandler.setNewBundleVersion(manifestHandler.getHighestExportedVersion());
+				Version bundleVersionToSet = manifestHandler.getHighestExportedVersion();
+				manifestHandler.setNewBundleVersion(bundleVersionToSet);
 
 				Optional<String> newContent = manifestHandler.update(manifestFile);
-				return new ManifestChanges(result, newContent);
+				boolean bundleVersionIsChanging = !bundleVersionToSet.toString().equals(
+						manifestHandler.getBundleVersion());
+
+				if (bundleVersionIsChanging && manifestFile.getParentFile() != null
+						&& manifestFile.getParentFile().getParentFile() != null) {
+					File pomXML = new File(manifestFile.getParentFile().getParentFile().getAbsolutePath() + "/pom.xml");
+					if (pomXML.exists() && pomXML.canRead() && pomXML.canWrite()) {
+						try {
+							PomRewriter pomRewriter = new PomRewriter();
+							pomRewriter.setPluginVersion(bundleVersionToSet);
+							pomRewriter.rewrite(pomXML);
+						} catch (XMLStreamException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+				if (bundleVersionIsChanging) {
+					return new ManifestChanges(result, newContent, Optional.of(bundleVersionToSet));
+				} else {
+					return new ManifestChanges(result, newContent, Optional.<Version> absent());
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {

@@ -68,9 +68,14 @@ public class Baseliner {
 					if (change.getFileContent().isPresent()) {
 						updatedContent = change.getFileContent().get();
 					}
-					manifestFile.refreshLocal(1, monitor);
 					if (changeLog != null) {
 						changeLog.aggregate(project.getName(), change.getChanges());
+					}
+					if (change.bundleVersionUpdate()) {
+						manifestFile.refreshLocal(1, monitor);
+						project.refreshLocal(1, monitor);
+					} else {
+						manifestFile.refreshLocal(1, monitor);
 					}
 				}
 

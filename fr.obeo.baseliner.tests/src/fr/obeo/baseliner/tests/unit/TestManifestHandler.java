@@ -9,7 +9,7 @@ import java.util.jar.Manifest;
 
 import org.junit.Test;
 
-import fr.obeo.baseliner.ManifestHandler;
+import fr.obeo.baseliner.ManifestRewriter;
 
 public class TestManifestHandler {
 
@@ -179,7 +179,7 @@ public class TestManifestHandler {
 
 	private void compareWithExpected(String compareManifest, String expected)
 			throws IOException {
-		ManifestHandler handler = new ManifestHandler();
+		ManifestRewriter handler = new ManifestRewriter();
 		handler.load(compareManifest);
 		String merged = handler.getMergedManifest(compareManifest);
 		loadAsJavaManifest(merged);

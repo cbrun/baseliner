@@ -17,11 +17,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.progress.IProgressService;
 
 import com.google.common.io.Closeables;
 
@@ -70,46 +71,46 @@ public class BaselineProjects extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		final ISelection selection = HandlerUtil.getCurrentSelection(event);
 		if (selection instanceof IStructuredSelection) {
-			try {
-				PlatformUI.getWorkbench().getProgressService().run(true, false, new IRunnableWithProgress() {
-
-					@Override
-					public void run(IProgressMonitor arg0) throws InvocationTargetException, InterruptedException {
-						List<IProject> projects = new ArrayList<IProject>();
-						for (Iterator it = ((IStructuredSelection) selection).iterator(); it.hasNext();) {
-							Object element = it.next();
-							IProject project = null;
-							if (element instanceof IProject) {
-								project = (IProject) element;
-							} else if (element instanceof IAdaptable) {
-								project = (IProject) ((IAdaptable) element).getAdapter(IProject.class);
-							}
-							if (project != null) {
-								projects.add(project);
-							}
-						}
-						try {
-							baseline(projects, arg0);
-						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (JavaModelException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (CoreException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-
-				});
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			final List<IProject> projects = new ArrayList<IProject>();
+			for (Iterator it = ((IStructuredSelection) selection).iterator(); it.hasNext();) {
+				Object element = it.next();
+				IProject project = null;
+				if (element instanceof IProject) {
+					project = (IProject) element;
+				} else if (element instanceof IAdaptable) {
+					project = (IProject) ((IAdaptable) element).getAdapter(IProject.class);
+				}
+				if (project != null) {
+					projects.add(project);
+				}
 			}
+			WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
+				protected void execute(IProgressMonitor monitor) throws CoreException {
+					try {
+						baseline(projects, monitor);
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (JavaModelException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (CoreException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				};
+			};
+
+			// Use the progess service to execute the runnable
+			IProgressService service = PlatformUI.getWorkbench().getProgressService();
+			try {
+				service.run(true, true, op);
+			} catch (InvocationTargetException e) {
+				// Operation was canceled
+			} catch (InterruptedException e) {
+				// Handle the wrapped exception
+			}
+
 		}
 		return null;
 	}
