@@ -110,7 +110,7 @@ public class Baseliner {
 			is = new ByteArrayInputStream(report.getBytes());
 			if (changeFile.exists()) {
 				changeFile.setContents(is, true, true, monitor);
-			} else {
+			} else if (report != null && report.trim().length() > 0 ){
 				changeFile.create(is, true, monitor);
 			}
 		} finally {
