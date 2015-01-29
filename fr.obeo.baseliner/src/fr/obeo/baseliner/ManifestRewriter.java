@@ -227,7 +227,7 @@ public class ManifestRewriter {
 				}
 			}
 		}
-		if (this.bundleVersion != null && this.bundleVersion.endsWith(".qualifier") && highestVersion.getQualifier() == null) {
+		if (this.bundleVersion != null && this.bundleVersion.endsWith(".qualifier") && highestVersion.getQualifier().length() == 0) {
 			highestVersion = new Version(highestVersion.toString() + ".qualifier");
 		}
 		return highestVersion;
