@@ -34,6 +34,7 @@
             </goals>
             <configuration>
               <excludes>
+		 <plugin id="biz.aQute.bndlib"/>
               </excludes>
             </configuration>
           </execution>
