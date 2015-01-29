@@ -3,6 +3,7 @@ package fr.obeo.baseliner.pde;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -10,12 +11,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Preferences;
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
-import org.eclipse.core.runtime.preferences.IPreferencesService;
-import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.pde.api.tools.internal.provisional.ApiPlugin;
 import org.eclipse.pde.api.tools.internal.provisional.model.IApiBaseline;
 import org.eclipse.pde.api.tools.internal.provisional.model.IApiComponent;
@@ -40,12 +37,9 @@ public class PDEBaselineJarProvider implements BaselinerJarProvider {
 	private static HashFunction hasher = Hashing.goodFastHash(14);
 
 	@Override
-	public File getPreviousJar(String catalogURI, String symbolicName, String bundleVersion) {
-
-		// TODO we really need to get an actual monitor and check for cancel, we
-		// might download things here.
-		IProgressMonitor monitor = new NullProgressMonitor();
-		if (catalogURI != null) {
+	public File getPreviousJar(String catalogURI, String symbolicName, String bundleVersion, IProgressMonitor monitor,
+			Collection<IStatus> statuses) {
+		if (catalogURI != null && !monitor.isCanceled()) {
 			if (catalogURI.equals("platform:/pde/apibaselines")) {
 				for (IApiBaseline baseline : ApiPlugin.getDefault().getApiBaselineManager().getApiBaselines()) {
 					IApiComponent bundle = baseline.getApiComponent(symbolicName);
@@ -74,7 +68,10 @@ public class PDEBaselineJarProvider implements BaselinerJarProvider {
 												.equals(currentTPFileHashCode)) {
 									WorkspaceFileTargetHandle myHandle = new WorkspaceFileTargetHandle(file);
 									def = myHandle.getTargetDefinition();
-									def.resolve(monitor);
+									IStatus resolveStatus = def.resolve(monitor);
+									if (!resolveStatus.isOK()) {
+										statuses.add(resolveStatus);
+									}
 									platformPathToTargetDefinition.put(catalogURI, def);
 									platformPathToPreviousHashcode.put(catalogURI, currentTPFileHashCode);
 								} else {
@@ -89,36 +86,35 @@ public class PDEBaselineJarProvider implements BaselinerJarProvider {
 								return searchFileFromBundleInfo(def, symbolicName, monitor);
 
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								statuses.add(error("Error reading the target definition file :" + tpIOFile.getPath(), e));
 							} catch (CoreException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								statuses.add(error(
+										"Error resolving the target definition file :" + tpFile.getFullPath(), e));
 							}
 
 						} else {
-							/*
-							 * TODO we can't access the actual IO file, we
-							 * should tell the user about that.
-							 */
+							statuses.add(error("Error reading the target definition file :" + tpIOFile.getPath()));
 						}
 					} else {
-						/*
-						 * TODO Can't access to the referenced TP file, we
-						 * should probably tell the user about that.
-						 */
+						statuses.add(error("Error reading the target definition file :" + pathInWorkspace));
 					}
 
 				} else {
-					/*
-					 * TODO the given path is wrong, no IFile is matching.
-					 */
+					statuses.add(error("Error reading the target definition file :" + pathInWorkspace));
 				}
 
 			}
 		}
 
 		return null;
+	}
+
+	private IStatus error(String message) {
+		return new Status(IStatus.ERROR, "fr.obeo.baseliner.pde", message);
+	}
+
+	private IStatus error(String message, Throwable e) {
+		return new Status(IStatus.ERROR, "fr.obeo.baseliner.pde", message, e);
 	}
 
 	private File searchFileFromBundleInfo(ITargetDefinition def, String bundleSymbolicName, IProgressMonitor monitor)

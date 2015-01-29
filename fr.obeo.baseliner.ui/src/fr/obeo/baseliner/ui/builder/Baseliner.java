@@ -17,6 +17,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.IScopeContext;
@@ -65,6 +66,7 @@ public class Baseliner {
 			FileNotFoundException, JavaModelException {
 		String updatedContent = null;
 		IFile manifestFile = project.getFile("META-INF/MANIFEST.MF");
+		BaselinerMarkers.clearMarkers(project);
 		if (manifestFile.exists() && manifestFile.isAccessible()) {
 			PluginBaseliner baseliner = BaselinerUIPlugin.getDefault().baseliner;
 			if (hasNature(project, BaselinerConstants.JAVA_NATURE_ID)
@@ -74,12 +76,16 @@ public class Baseliner {
 				if (!monitor.isCanceled()) {
 					baseliner.setJarProviderSource(BaselinerPreferences.getJarProviderSource(project));
 					ManifestChanges change = baseliner.updateManifestFile(new File(manifestFile.getLocation()
-							.toOSString()), declareJavaOutputFolders(baseliner, javaProject), Collections.EMPTY_LIST);
-					if (change.getFileContent().isPresent()) {
-						updatedContent = change.getFileContent().get();
+							.toOSString()), declareJavaOutputFolders(baseliner, javaProject), Collections.EMPTY_LIST,
+							monitor);
+					if (change.getUpdatedManifestContent().isPresent()) {
+						updatedContent = change.getUpdatedManifestContent().get();
 					}
 					if (changeLog != null) {
-						changeLog.aggregate(project.getName(), change.getChanges());
+						changeLog.aggregate(project.getName(), change.getPackageChanges());
+					}
+					for (IStatus infos : change.getStatuses()) {
+						BaselinerMarkers.addMarker(project, infos);
 					}
 					if (change.bundleVersionUpdate()) {
 						manifestFile.refreshLocal(1, monitor);

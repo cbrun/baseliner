@@ -18,6 +18,7 @@ Service-Component: OSGI-INF/component.xml
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.equinox.util,
  org.eclipse.equinox.ds,
- org.eclipse.osgi.services
+ org.eclipse.osgi.services,
+ org.eclipse.core.runtime;bundle-version="3.10.0"
 Bundle-Localization: plugin
 

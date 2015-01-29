@@ -8,6 +8,7 @@ import aQute.bnd.differ.Baseline.Info;
 import aQute.bnd.service.diff.Diff;
 import aQute.bnd.service.diff.Type;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 import fr.obeo.baseliner.Delta;
@@ -21,41 +22,67 @@ public class BndDelta implements Delta {
 	}
 
 	@Override
-	public Version getSuggestedVersion() {
-		return new Version(this.info.suggestedVersion.toString());
+	public Optional<Version> getSuggestedVersion() {
+		if (this.info.suggestedVersion != null) {
+			return Optional.of(new Version(this.info.suggestedVersion.toString()));
+		} else {
+			return Optional.<Version> absent();
+		}
 	}
 
-	public Version getOldVersion() {
-		return new Version(this.info.olderVersion.toString());
+	public Optional<Version> getOldVersion() {
+		if (this.info.olderVersion != null) {
+			return Optional.of(new Version(this.info.olderVersion.toString()));
+		} else {
+			return Optional.<Version> absent();
+		}
+	}
+
+	public Optional<Version> getNewVersion() {
+		if (this.info.newerVersion != null) {
+			return Optional.of(new Version(this.info.newerVersion.toString()));
+		} else {
+			return Optional.<Version> absent();
+		}
 	}
 
 	@Override
-	public String getDescription() {
+	public String getBreakingAPIChanges() {
 		StringBuffer report = new StringBuffer();
-		Diff root = info.packageDiff;
-		List<Diff> breakingChanges = Lists.newArrayList();
-		List<Diff> compatibleChanges = Lists.newArrayList();
-		for (Diff child : root.getChildren()) {
-			if (child.getDelta() == aQute.bnd.service.diff.Delta.MAJOR) {
-				breakingChanges.add(child);
-			} else {
-				compatibleChanges.add(child);
-			}
-		}
-		if (breakingChanges.size() > 0) {
-			report.append("\n\nh4. Breaking API Changes:\n");
-			for (Diff diff : breakingChanges) {
-				report.append(show(diff, "  ", true));
-			}
-		}
-		if (compatibleChanges.size() > 0) {
-			report.append("\n\nh4. Compatible API Changes:\n");
-			for (Diff diff : compatibleChanges) {
-				report.append(show(diff, "  ", true));
-			}
+		for (Diff diff : getBreakingChanges()) {
+			report.append(show(diff, "  ", true));
 		}
 		return report.toString();
-		//return show(info.packageDiff, "  ", true);
+	}
+
+	@Override
+	public String getCompatibleAPIChanges() {
+		StringBuffer report = new StringBuffer();
+		for (Diff diff : getCompatibleChanges()) {
+			report.append(show(diff, "  ", true));
+		}
+		return report.toString();
+	}
+
+	private List<Diff> getBreakingChanges() {
+		List<Diff> breakingChanges = Lists.newArrayList();
+		for (Diff child : info.packageDiff.getChildren()) {
+			if (child.getDelta() == aQute.bnd.service.diff.Delta.MAJOR) {
+				breakingChanges.add(child);
+			}
+		}
+		return breakingChanges;
+	}
+
+	private List<Diff> getCompatibleChanges() {
+		List<Diff> compatible = Lists.newArrayList();
+		for (Diff child : info.packageDiff.getChildren()) {
+			if (child.getDelta() == aQute.bnd.service.diff.Delta.MINOR
+					|| child.getDelta() == aQute.bnd.service.diff.Delta.MICRO) {
+				compatible.add(child);
+			}
+		}
+		return compatible;
 	}
 
 	/**

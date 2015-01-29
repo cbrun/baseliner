@@ -15,19 +15,34 @@ public class MEMApiChangeLog implements ApiChangeLog {
 	}
 
 	public String report() {
-		StringBuffer result = new StringBuffer();
+		StringBuffer breakingChangesPart = new StringBuffer();
 		for (Entry<String, Delta> entry : mergedChanges.entrySet()) {
-			String changeDescription = entry.getValue().getDescription();
-			if (changeDescription != null && changeDescription.trim().length() > 0) {
-				result.append("\n\nh3. Changes in @" + entry.getKey() + "@\n\n");
-				// result.append("\n * The " + entry.getKey() + "[" +
-				// entry.getValue().getOldVersion() + "]" + "-> ["
-				// + entry.getValue().getSuggestedVersion() + "]");
-
-				result.append(changeDescription);
+			String changeDescription = entry.getValue().getBreakingAPIChanges();
+			if (changeDescription != null && changeDescription.length() > 0) {
+				breakingChangesPart.append("\n\nh3. Package @" + entry.getKey() + "@\n\n");
+				breakingChangesPart.append(changeDescription);
 			}
 		}
-		return result.toString();
+
+		StringBuffer compatibleChangesPart = new StringBuffer();
+		for (Entry<String, Delta> entry : mergedChanges.entrySet()) {
+			String changeDescription = entry.getValue().getCompatibleAPIChanges();
+			if (changeDescription != null && changeDescription.length() > 0) {
+				compatibleChangesPart.append("\n\nh3. Package @" + entry.getKey() + "@\n\n");
+				compatibleChangesPart.append(changeDescription);
+			}
+		}
+		StringBuffer report = new StringBuffer();
+		if (breakingChangesPart.length() > 0) {
+			report.append("\n\nh2. Breaking API Changes :\n\n");
+			report.append(breakingChangesPart.toString());
+		}
+		if (compatibleChangesPart.length() > 0) {
+			report.append("\n\nh2. Compatible API Changes :\n\n");
+			report.append(compatibleChangesPart.toString());
+		}
+
+		return report.toString();
 	}
 
 }

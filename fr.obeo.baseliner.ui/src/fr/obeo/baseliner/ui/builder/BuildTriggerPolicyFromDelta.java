@@ -20,8 +20,7 @@ public class BuildTriggerPolicyFromDelta implements IResourceDeltaVisitor {
 
 	private HashFunction hashFunction;
 
-	public BuildTriggerPolicyFromDelta(HashFunction hashfunc,
-			HashCode lastManifestCode) {
+	public BuildTriggerPolicyFromDelta(HashFunction hashfunc, HashCode lastManifestCode) {
 		this.lastManifestCode = lastManifestCode;
 		this.hashFunction = hashfunc;
 	}
@@ -29,8 +28,7 @@ public class BuildTriggerPolicyFromDelta implements IResourceDeltaVisitor {
 	@Override
 	public boolean visit(IResourceDelta delta) throws CoreException {
 		// only interested in changed resources (not added or removed)
-		if (delta.getKind() == IResourceDelta.MARKERS
-				|| delta.getKind() == IResourceDelta.NO_CHANGE)
+		if (delta.getKind() == IResourceDelta.MARKERS || delta.getKind() == IResourceDelta.NO_CHANGE)
 			return true;
 		// only interested in content changes
 		if ((delta.getFlags() & IResourceDelta.CONTENT) == 0)
@@ -38,6 +36,9 @@ public class BuildTriggerPolicyFromDelta implements IResourceDeltaVisitor {
 		IResource resource = delta.getResource();
 		// only interested in files with the "txt" extension
 		if (resource.getType() == IResource.FILE) {
+			if ("fr.obeo.baseliner.prefs".equals(resource.getName())) {
+				shouldRebuild = true;
+			}
 			if ("MANIFEST.MF".equals(resource.getName())) {
 				/*
 				 * we have an event on a Manifest file.
@@ -45,8 +46,7 @@ public class BuildTriggerPolicyFromDelta implements IResourceDeltaVisitor {
 				if (lastManifestCode != null) {
 
 					try {
-						HashCode newCode = Files.hash(((IFile) resource)
-								.getLocation().toFile(), hashFunction);
+						HashCode newCode = Files.hash(((IFile) resource).getLocation().toFile(), hashFunction);
 						if (!lastManifestCode.equals(newCode))
 							shouldRebuild = true;
 					} catch (IOException e) {

@@ -5,16 +5,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.osgi.framework.Version;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.io.Files;
 
 public class PluginBaseliner {
 
@@ -61,29 +65,45 @@ public class PluginBaseliner {
 	public PluginBaseliner() {
 	}
 
-	public ManifestChanges updateManifestFile(File manifestFile, Collection<File> outputDirs, Collection<File> srcDirs)
-			throws FileNotFoundException {
-		ManifestChanges result = addExportedPackagesVersions(manifestFile, outputDirs);
-		cleanup.cleanup(manifestFile);
+	public ManifestChanges updateManifestFile(File manifestFile, Collection<File> outputDirs, Collection<File> srcDirs,
+			IProgressMonitor monitor) throws FileNotFoundException {
+		ManifestChanges result = addExportedPackagesVersions(manifestFile, outputDirs, monitor);
+		if (!monitor.isCanceled()) {
+			cleanup.cleanup(manifestFile);
+		}
 		return result;
 	}
 
-	private ManifestChanges addExportedPackagesVersions(File manifestFile, Collection<File> outputDirs)
-			throws FileNotFoundException {
+	private static final Version NONE = new Version(0, 0, 0);
+
+	private ManifestChanges addExportedPackagesVersions(File manifestFile, Collection<File> outputDirs,
+			IProgressMonitor monitor) throws FileNotFoundException {
 		Map<String, Delta> result = Maps.newHashMap();
 		if (apiComparator.isPresent()) {
 			for (File outputDirectory : outputDirs) {
 				apiComparator.get().loadNewClassesFromFolder(outputDirectory.getParentFile(), outputDirectory);
 			}
 			FileInputStream fileInputStream = new FileInputStream(manifestFile);
+			List<IStatus> statusesToReport = Lists.newArrayList();
 			try {
 				ManifestRewriter manifestHandler = new ManifestRewriter();
 				manifestHandler.load(fileInputStream);
 				if (jarProvider.isPresent()) {
 					File jar = jarProvider.get().getPreviousJar(jarProviderSource, manifestHandler.getSymbolicName(),
-							manifestHandler.getBundleVersion());
+							manifestHandler.getBundleVersion(), monitor, statusesToReport);
 					if (jar != null) {
 						apiComparator.get().loadOldClassesFromFolder(jar);
+					} else {
+						statusesToReport
+								.add(new Status(IStatus.ERROR, "fr.obeo.baseliner", "Could not find a "
+										+ manifestHandler.getSymbolicName() + " bundle in the baseline : "
+										+ jarProviderSource));
+						ManifestChanges manifestChanges = new ManifestChanges(result, Optional.<String> absent(),
+								Optional.<Version> absent());
+						for (IStatus iStatus : statusesToReport) {
+							manifestChanges.addStatus(iStatus);
+						}
+						return manifestChanges;
 					}
 				}
 				result = apiComparator.get().diffByPackage();
@@ -92,9 +112,19 @@ public class PluginBaseliner {
 
 					String ns = exportedPackage.getKey();
 
-					Delta packageDelta = result.get(ns);
-					if (packageDelta != null) {
-						Version inferedVersion = packageDelta.getSuggestedVersion();
+					Delta d = result.get(ns);
+					if (d != null) {
+						Version inferedVersion = new Version(manifestHandler.getBundleVersion());
+						if (d.getNewVersion().isPresent()) {
+							inferedVersion = d.getNewVersion().get();
+						}
+						/*
+						 * if there is no suggested version (or it is 0.0.0,
+						 * then pick the bundle version.
+						 */
+						if (d.getSuggestedVersion().isPresent() && !d.getSuggestedVersion().get().equals(NONE)) {
+							inferedVersion = d.getSuggestedVersion().get();
+						}
 						manifestHandler.setPackageVersion(ns, inferedVersion);
 					}
 				}
@@ -107,7 +137,7 @@ public class PluginBaseliner {
 						manifestHandler.getBundleVersion());
 
 				if (bundleVersionIsChanging && manifestFile.getParentFile() != null
-						&& manifestFile.getParentFile().getParentFile() != null) {
+						&& manifestFile.getParentFile().getParentFile() != null && !monitor.isCanceled()) {
 					File pomXML = new File(manifestFile.getParentFile().getParentFile().getAbsolutePath() + "/pom.xml");
 					if (pomXML.exists() && pomXML.canRead() && pomXML.canWrite()) {
 						try {
@@ -121,9 +151,19 @@ public class PluginBaseliner {
 					}
 				}
 				if (bundleVersionIsChanging) {
-					return new ManifestChanges(result, newContent, Optional.of(bundleVersionToSet));
+					ManifestChanges manifestChange = new ManifestChanges(result, newContent,
+							Optional.of(bundleVersionToSet));
+					for (IStatus iStatus : statusesToReport) {
+						manifestChange.addStatus(iStatus);
+					}
+					return manifestChange;
 				} else {
-					return new ManifestChanges(result, newContent, Optional.<Version> absent());
+					ManifestChanges manifestChange = new ManifestChanges(result, newContent,
+							Optional.<Version> absent());
+					for (IStatus iStatus : statusesToReport) {
+						manifestChange.addStatus(iStatus);
+					}
+					return manifestChange;
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

@@ -1,10 +1,13 @@
 package fr.obeo.baseliner;
 
+import java.util.Collection;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IStatus;
 import org.osgi.framework.Version;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class ManifestChanges {
@@ -18,6 +21,8 @@ public class ManifestChanges {
 
 	private Optional<Version> newVersion;
 
+	private Collection<IStatus> statuses = Lists.newArrayList();
+
 	public ManifestChanges(Map<String, Delta> changes, Optional<String> fileContent, Optional<Version> newVersion) {
 		super();
 		this.changes = changes;
@@ -25,16 +30,24 @@ public class ManifestChanges {
 		this.newVersion = newVersion;
 	}
 
-	public Optional<String> getFileContent() {
+	public Optional<String> getUpdatedManifestContent() {
 		return fileContent;
 	}
 
-	public Map<String, Delta> getChanges() {
+	public Map<String, Delta> getPackageChanges() {
 		return changes;
 	}
 
 	public boolean bundleVersionUpdate() {
 		return newVersion.isPresent();
+	}
+
+	public void addStatus(IStatus status) {
+		this.statuses.add(status);
+	}
+
+	public Collection<IStatus> getStatuses() {
+		return statuses;
 	}
 
 }

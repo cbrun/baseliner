@@ -103,7 +103,7 @@ public class BndApiComparator implements ApiComparator {
 
 	}
 
-	private static final Version NONE = new Version(0, 0, 0);
+	
 
 	@Override
 	public Map<String, Delta> diffByPackage() {
@@ -114,11 +114,7 @@ public class BndApiComparator implements ApiComparator {
 				Set<Info> infos = baseline.baseline(newJar, oldJar, new Instructions("*"));
 				for (Info info : infos) {
 					if (info.suggestedVersion != null)
-						if (info.olderVersion == null || info.suggestedVersion.compareTo(info.newerVersion) != 0
-								&& info.suggestedVersion.compareTo(NONE) > 0) {
-							result.put(info.packageName, new BndDelta(info));
-						}
-
+						result.put(info.packageName, new BndDelta(info));
 				}
 			}
 		} catch (IOException e) {
