@@ -24,6 +24,8 @@ public class PluginBaseliner {
 
 	private ManifestCleanup cleanup = new NOOPManifestCleanup();
 
+	private String jarProviderSource = "platform:/pde/apibaselines";
+
 	public synchronized void setBaselineJarProvider(BaselinerJarProvider jarProvider) {
 		this.jarProvider = Optional.of(jarProvider);
 	}
@@ -78,7 +80,7 @@ public class PluginBaseliner {
 				ManifestRewriter manifestHandler = new ManifestRewriter();
 				manifestHandler.load(fileInputStream);
 				if (jarProvider.isPresent()) {
-					File jar = jarProvider.get().getPreviousJar(manifestHandler.getSymbolicName(),
+					File jar = jarProvider.get().getPreviousJar(jarProviderSource, manifestHandler.getSymbolicName(),
 							manifestHandler.getBundleVersion());
 					if (jar != null) {
 						apiComparator.get().loadOldClassesFromFolder(jar);
@@ -94,7 +96,7 @@ public class PluginBaseliner {
 					if (packageDelta != null) {
 						Version inferedVersion = packageDelta.getSuggestedVersion();
 						manifestHandler.setPackageVersion(ns, inferedVersion);
-					} 
+					}
 				}
 
 				Version bundleVersionToSet = manifestHandler.getHighestExportedVersion();
@@ -134,6 +136,11 @@ public class PluginBaseliner {
 			}
 		}
 		return ManifestChanges.NOCHANGE;
+	}
+
+	public void setJarProviderSource(String sourceURI) {
+		this.jarProviderSource = sourceURI;
+
 	}
 
 }

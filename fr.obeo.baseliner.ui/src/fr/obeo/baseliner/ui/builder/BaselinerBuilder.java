@@ -58,6 +58,7 @@ public class BaselinerBuilder extends IncrementalProjectBuilder {
 		try {
 			IProject project = getProject();
 			Optional<String> updatedContent = baseliner.doBaseline(monitor, project);
+			baseliner.updateAPIReport(monitor, project);
 			if (updatedContent.isPresent()) {
 				lastManifestHash = hashFunction.hashString(updatedContent.get(), Charsets.UTF_8);
 			}

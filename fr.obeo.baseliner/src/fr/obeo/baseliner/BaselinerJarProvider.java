@@ -4,6 +4,6 @@ import java.io.File;
 
 public interface BaselinerJarProvider {
 
-	File getPreviousJar(String symbolicName, String bundleVersion);
+	File getPreviousJar(String catalogURI, String symbolicName, String bundleVersion);
 
 }

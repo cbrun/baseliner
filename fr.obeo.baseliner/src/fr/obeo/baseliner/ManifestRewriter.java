@@ -227,13 +227,13 @@ public class ManifestRewriter {
 				}
 			}
 		}
-		if (this.bundleVersion != null && this.bundleVersion.endsWith(".qualifier")) {
+		if (this.bundleVersion != null && this.bundleVersion.endsWith(".qualifier") && highestVersion.getQualifier() == null) {
 			highestVersion = new Version(highestVersion.toString() + ".qualifier");
 		}
 		return highestVersion;
 	}
 
-	private boolean isMarkedInternal(String ns) {
+	public boolean isMarkedInternal(String ns) {
 		for (String extraExtension : extraExtensions.get(ns)) {
 			if (extraExtension != null && extraExtension.contains("x-internal:=")) {
 				return true;

@@ -1,8 +1,6 @@
 package fr.obeo.baseliner.ui.builder;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,7 +9,6 @@ import java.util.List;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -23,8 +20,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.progress.IProgressService;
-
-import com.google.common.io.Closeables;
 
 import fr.obeo.baseliner.MEMApiChangeLog;
 
@@ -48,22 +43,7 @@ public class BaselineProjects extends AbstractHandler {
 			MEMApiChangeLog changePerProject = new MEMApiChangeLog();
 			baseliner.setChangeLog(changePerProject);
 			baseliner.doBaseline(monitor, iProject);
-			IFile changeFile = iProject.getFile("api_changes.textile");
-			// FIXME encoding ! ! Don't use getBytes
-			InputStream is = null;
-			try {
-				String report = changePerProject.report();
-				if (report.length() > 0) {
-					is = new ByteArrayInputStream(report.getBytes());
-					if (changeFile.exists()) {
-						changeFile.setContents(is, true, true, monitor);
-					} else {
-						changeFile.create(is, true, monitor);
-					}
-				}
-			} finally {
-				Closeables.closeQuietly(is);
-			}
+			baseliner.updateAPIReport(monitor, iProject);
 		}
 	}
 

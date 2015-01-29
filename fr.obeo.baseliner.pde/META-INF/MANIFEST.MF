@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Obeo.fr
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: fr.obeo.baseliner,
+ org.eclipse.equinox.frameworkadmin;version="2.0.0",
  org.osgi.framework;version="1.7.0"
 Service-Component: OSGI-INF/component.xml,
  OSGI-INF/cleanup.xml
@@ -18,6 +19,7 @@ Require-Bundle: org.eclipse.equinox.util,
  org.eclipse.pde.ui,
  org.eclipse.core.runtime,
  org.eclipse.ltk.core.refactoring,
- org.eclipse.core.resources;bundle-version="3.8.1"
+ org.eclipse.core.resources;bundle-version="3.8.1",
+ com.google.guava;bundle-version="15.0.0"
 Bundle-Localization: plugin
 

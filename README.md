@@ -43,15 +43,16 @@ Next steps
 * ~~Proper buids and distribution~~
 * per-project configuration to specify namespaces to ignore
 * ~~trigger ManifestCleanup and keep project-specific settings~~ : It's actually too slow and bloat the Manifest.MF
-* Make sure the micro segment is updated for non-breaking changes.
+* ~~Make sure the micro segment is updated for non-breaking changes.~~
 * automatic rule always export all the packages with the "internal" tag with explicit opt-in.
 * ~~automatic upgrade of the bundle version based on the package versions.~~
 * automatic generation and update of an api-change report for each bundle.
 * ~~Avoid the self triggering of the builder when Manifest.MF is changed by the builder~~
 * Profile and assess performance overhead when 100 projects are in the workspace
-* Self provisionning of API baselines based on per-project configuration.
+* ~~Self provisionning of API baselines based on per-project configuration.~~
 * ~~a mean to use the tool without using the incremental builder approach~~
 * ~~keep pom.xml in sync with bundle-version~~
+* error reporting for non-resolvable configuration (project settings or un-resolvable target platform)
 
 
 
@@ -60,7 +61,7 @@ Next steps
 The code is pretty much in a draf state right now, what is notably missing :
 
 * Review of naming in the APIs.
-* ~~The builder is not filtering deltas, it will be triggered whatever change happen, N times for N projects.~~
+* ~~The builder is barely filtering deltas, it will be triggered whatever change happen, N times for N projects.~~
 * Proper error handling and logging.
 * ~~Proper target platform definition.~~
 * Use the target platform definition in the CI build

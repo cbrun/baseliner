@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
+import org.osgi.service.prefs.BackingStoreException;
 
 public class ToggleNatureHandler extends AbstractHandler {
 
@@ -39,11 +40,9 @@ public class ToggleNatureHandler extends AbstractHandler {
 						// Remove the nature
 						String[] newNatures = new String[natures.length - 1];
 						System.arraycopy(natures, 0, newNatures, 0, i);
-						System.arraycopy(natures, i + 1, newNatures, i,
-								natures.length - i - 1);
+						System.arraycopy(natures, i + 1, newNatures, i, natures.length - i - 1);
 						description.setNatureIds(newNatures);
-						project.setDescription(description,
-								new NullProgressMonitor());
+						project.setDescription(description, new NullProgressMonitor());
 
 						break;
 					}
@@ -55,12 +54,22 @@ public class ToggleNatureHandler extends AbstractHandler {
 				System.arraycopy(natures, 0, newNatures, 1, natures.length);
 				newNatures[0] = BaselinerNature.NATURE_ID;
 				description.setNatureIds(newNatures);
-				project.setDescription(description,
-						new NullProgressMonitor());
+				project.setDescription(description, new NullProgressMonitor());
 				nature.configure();
+
+				/*
+				 * add default preferences
+				 */
+				BaselinerPreferences.setJarProviderSources(project, BaselinerPreferences.DEFAULT_JAR_SOURCE);
 			}
 
 		} catch (CoreException e) {
+		} catch (BackingStoreException e) {
+			/*
+			 * could not save the preference.
+			 */
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -69,30 +78,25 @@ public class ToggleNatureHandler extends AbstractHandler {
 		final ISelection selection = HandlerUtil.getCurrentSelection(event);
 		if (selection instanceof IStructuredSelection) {
 			try {
-				PlatformUI.getWorkbench().getProgressService()
-						.run(true, false, new IRunnableWithProgress() {
+				PlatformUI.getWorkbench().getProgressService().run(true, false, new IRunnableWithProgress() {
 
-							@Override
-							public void run(IProgressMonitor arg0)
-									throws InvocationTargetException,
-									InterruptedException {
-								for (Iterator it = ((IStructuredSelection) selection)
-										.iterator(); it.hasNext();) {
-									Object element = it.next();
-									IProject project = null;
-									if (element instanceof IProject) {
-										project = (IProject) element;
-									} else if (element instanceof IAdaptable) {
-										project = (IProject) ((IAdaptable) element)
-												.getAdapter(IProject.class);
-									}
-									if (project != null) {
-										toggleNature(project);
-									}
-								}
+					@Override
+					public void run(IProgressMonitor arg0) throws InvocationTargetException, InterruptedException {
+						for (Iterator it = ((IStructuredSelection) selection).iterator(); it.hasNext();) {
+							Object element = it.next();
+							IProject project = null;
+							if (element instanceof IProject) {
+								project = (IProject) element;
+							} else if (element instanceof IAdaptable) {
+								project = (IProject) ((IAdaptable) element).getAdapter(IProject.class);
 							}
+							if (project != null) {
+								toggleNature(project);
+							}
+						}
+					}
 
-						});
+				});
 			} catch (InvocationTargetException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
