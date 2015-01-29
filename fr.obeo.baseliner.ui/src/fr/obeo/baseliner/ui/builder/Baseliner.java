@@ -95,21 +95,17 @@ public class Baseliner {
 		return Optional.fromNullable(updatedContent);
 	}
 
-	
-
 	public void updateAPIReport(final IProgressMonitor monitor, IProject project) throws CoreException {
 		IFile changeFile = project.getFile("api_changes.textile");
 		// FIXME encoding ! ! Don't use getBytes
 		InputStream is = null;
 		try {
 			String report = changeLog.report();
-			if (report.length() > 0) {
-				is = new ByteArrayInputStream(report.getBytes());
-				if (changeFile.exists()) {
-					changeFile.setContents(is, true, true, monitor);
-				} else {
-					changeFile.create(is, true, monitor);
-				}
+			is = new ByteArrayInputStream(report.getBytes());
+			if (changeFile.exists()) {
+				changeFile.setContents(is, true, true, monitor);
+			} else {
+				changeFile.create(is, true, monitor);
 			}
 		} finally {
 			Closeables.closeQuietly(is);

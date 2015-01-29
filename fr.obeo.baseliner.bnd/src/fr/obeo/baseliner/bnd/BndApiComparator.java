@@ -14,6 +14,7 @@ import aQute.bnd.differ.DiffPluginImpl;
 import aQute.bnd.osgi.Instructions;
 import aQute.bnd.osgi.Jar;
 import aQute.bnd.osgi.Resource;
+import aQute.bnd.version.Version;
 import aQute.service.reporter.Reporter;
 import fr.obeo.baseliner.ApiComparator;
 import fr.obeo.baseliner.Delta;
@@ -102,6 +103,8 @@ public class BndApiComparator implements ApiComparator {
 
 	}
 
+	private static final Version NONE = new Version(0, 0, 0);
+
 	@Override
 	public Map<String, Delta> diffByPackage() {
 		Map<String, Delta> result = new HashMap<String, Delta>();
@@ -111,7 +114,8 @@ public class BndApiComparator implements ApiComparator {
 				Set<Info> infos = baseline.baseline(newJar, oldJar, new Instructions("*"));
 				for (Info info : infos) {
 					if (info.suggestedVersion != null)
-						if (info.olderVersion == null || info.suggestedVersion.compareTo(info.newerVersion) != 0) {
+						if (info.olderVersion == null || info.suggestedVersion.compareTo(info.newerVersion) != 0
+								&& info.suggestedVersion.compareTo(NONE) > 0) {
 							result.put(info.packageName, new BndDelta(info));
 						}
 

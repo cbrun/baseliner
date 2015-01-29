@@ -1,10 +1,15 @@
 package fr.obeo.baseliner.bnd;
 
+import java.util.List;
+
 import org.osgi.framework.Version;
 
 import aQute.bnd.differ.Baseline.Info;
 import aQute.bnd.service.diff.Diff;
 import aQute.bnd.service.diff.Type;
+
+import com.google.common.collect.Lists;
+
 import fr.obeo.baseliner.Delta;
 
 public class BndDelta implements Delta {
@@ -26,7 +31,31 @@ public class BndDelta implements Delta {
 
 	@Override
 	public String getDescription() {
-		return show(info.packageDiff, "  ", true);
+		StringBuffer report = new StringBuffer();
+		Diff root = info.packageDiff;
+		List<Diff> breakingChanges = Lists.newArrayList();
+		List<Diff> compatibleChanges = Lists.newArrayList();
+		for (Diff child : root.getChildren()) {
+			if (child.getDelta() == aQute.bnd.service.diff.Delta.MAJOR) {
+				breakingChanges.add(child);
+			} else {
+				compatibleChanges.add(child);
+			}
+		}
+		if (breakingChanges.size() > 0) {
+			report.append("\n\nh4. Breaking API Changes:\n");
+			for (Diff diff : breakingChanges) {
+				report.append(show(diff, "  ", true));
+			}
+		}
+		if (compatibleChanges.size() > 0) {
+			report.append("\n\nh4. Compatible API Changes:\n");
+			for (Diff diff : compatibleChanges) {
+				report.append(show(diff, "  ", true));
+			}
+		}
+		return report.toString();
+		//return show(info.packageDiff, "  ", true);
 	}
 
 	/**
