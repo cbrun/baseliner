@@ -111,7 +111,7 @@ public class BndApiComparator implements ApiComparator {
 				Set<Info> infos = baseline.baseline(newJar, oldJar, new Instructions("*"));
 				for (Info info : infos) {
 					if (info.suggestedVersion != null)
-						if (info.olderVersion == null || info.suggestedVersion.compareTo(info.olderVersion) != 0) {
+						if (info.olderVersion == null || info.suggestedVersion.compareTo(info.newerVersion) != 0) {
 							result.put(info.packageName, new BndDelta(info));
 						}
 
