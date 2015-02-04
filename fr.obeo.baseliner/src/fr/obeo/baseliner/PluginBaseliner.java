@@ -125,7 +125,7 @@ public class PluginBaseliner {
 						if (d.getSuggestedVersion().isPresent() && !d.getSuggestedVersion().get().equals(NONE)) {
 							inferedVersion = d.getSuggestedVersion().get();
 						}
-						if (inferedVersion.equals(NONE)) {
+						if (inferedVersion.getMajor() == 0 && inferedVersion.getMinor() == 0 && inferedVersion.getMicro() == 0) {
 							inferedVersion = new Version(manifestHandler.getBundleVersion());
 						}
 						manifestHandler.setPackageVersion(ns, inferedVersion);
