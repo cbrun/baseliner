@@ -95,7 +95,7 @@ public class PluginBaseliner {
 						apiComparator.get().loadOldClassesFromFolder(jar);
 					} else {
 						statusesToReport
-								.add(new Status(IStatus.ERROR, "fr.obeo.baseliner", "Could not find a "
+								.add(new Status(IStatus.WARNING, "fr.obeo.baseliner", "Could not find a "
 										+ manifestHandler.getSymbolicName() + " bundle in the baseline : "
 										+ jarProviderSource));
 						ManifestChanges manifestChanges = new ManifestChanges(result, Optional.<String> absent(),
