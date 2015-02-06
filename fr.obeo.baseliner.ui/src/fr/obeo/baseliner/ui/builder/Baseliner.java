@@ -110,9 +110,10 @@ public class Baseliner {
 			is = new ByteArrayInputStream(report.getBytes());
 			if (changeFile.exists()) {
 				changeFile.setContents(is, true, true, monitor);
-			} else if (report != null && report.trim().length() > 0 ){
+			} else if (report != null && report.trim().length() > 0) {
 				changeFile.create(is, true, monitor);
 			}
+			changeFile.setDerived(true, monitor);
 		} finally {
 			Closeables.closeQuietly(is);
 		}
