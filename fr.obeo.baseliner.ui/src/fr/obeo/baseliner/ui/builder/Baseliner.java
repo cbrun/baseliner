@@ -113,7 +113,6 @@ public class Baseliner {
 			} else if (report != null && report.trim().length() > 0) {
 				changeFile.create(is, true, monitor);
 			}
-			changeFile.setDerived(true, monitor);
 		} finally {
 			Closeables.closeQuietly(is);
 		}
