@@ -1,5 +1,6 @@
 package fr.obeo.baseliner.bnd;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.osgi.framework.Version;
@@ -9,9 +10,12 @@ import aQute.bnd.service.diff.Diff;
 import aQute.bnd.service.diff.Type;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import fr.obeo.baseliner.Delta;
+import fr.obeo.baseliner.ReportFormat;
 
 public class BndDelta implements Delta {
 
@@ -47,21 +51,13 @@ public class BndDelta implements Delta {
 	}
 
 	@Override
-	public String getBreakingAPIChanges() {
-		StringBuffer report = new StringBuffer();
-		for (Diff diff : getBreakingChanges()) {
-			report.append(show(diff, "  ", true));
-		}
-		return report.toString();
+	public String getBreakingAPIChanges(ReportFormat format) {
+		return prettyPrint(getBreakingChanges(), format);
 	}
 
 	@Override
-	public String getCompatibleAPIChanges() {
-		StringBuffer report = new StringBuffer();
-		for (Diff diff : getCompatibleChanges()) {
-			report.append(show(diff, "  ", true));
-		}
-		return report.toString();
+	public String getCompatibleAPIChanges(ReportFormat format) {
+		return prettyPrint(getCompatibleChanges(), format);
 	}
 
 	private List<Diff> getBreakingChanges() {
@@ -85,37 +81,94 @@ public class BndDelta implements Delta {
 		return compatible;
 	}
 
-	/**
-	 * Show the diff recursively
-	 *
-	 * @param p
-	 * @param i
-	 */
-	private String show(Diff p, String indent, boolean warning) {
-		String result = "";
-		if (p.getType() != Type.PACKAGE && p.getType() != Type.VERSION) {
-			aQute.bnd.service.diff.Delta d = p.getDelta();
-			if (d == aQute.bnd.service.diff.Delta.UNCHANGED) {
-				return result;
-			}
-
-			result += "\n" + indent + p;
-
-			indent = indent + "  ";
-			switch (d) {
-			case CHANGED:
-			case MAJOR:
-			case MINOR:
-			case MICRO:
-				break;
-
-			default:
-				return result;
+	private String prettyPrint(Collection<Diff> diffs, ReportFormat format) {
+		StringBuffer result = new StringBuffer();
+		String indent = "";
+		for (Diff diff : diffs) {
+			if (diff.getType() != Type.PACKAGE && diff.getType() != Type.VERSION
+					&& diff.getDelta() != aQute.bnd.service.diff.Delta.UNCHANGED) {
+				prettyPrintDiff(result, indent, diff, 1, format);
 			}
 		}
-		for (Diff c : p.getChildren())
-			result += show(c, indent, warning);
-		return result;
+		return result.toString();
+
+	}
+
+	private void prettyPrintDiff(StringBuffer result, String indent, Diff diff, int deph, ReportFormat format) {
+		List<? extends Diff> changedChildrens = getChangedChildrens(diff);
+		result.append("\n");
+		if (changedChildrens.size() > 0) {
+			result.append(format.startList(deph, prettyType(diff), diff.getName()));
+			for (Diff child : changedChildrens) {
+				prettyPrintDiff(result, indent + "  ", child, deph + 1, format);
+			}
+			result.append(format.endList(deph));
+		} else {
+			result.append(format.change(deph, diff.getName(), prettyType(diff), prettyChange(diff.getDelta())));
+		}
+	}
+
+	private List<? extends Diff> getChangedChildrens(Diff diff) {
+		return Lists.newArrayList(Iterables.filter(diff.getChildren(), new Predicate<Diff>() {
+
+			@Override
+			public boolean apply(Diff arg0) {
+				return arg0.getDelta() != aQute.bnd.service.diff.Delta.UNCHANGED;
+			}
+		}));
+	}
+
+	private String prettyChange(aQute.bnd.service.diff.Delta d) {
+		String pretty = d.toString();
+		switch (d) {
+		case ADDED:
+			pretty = "added";
+			break;
+		case REMOVED:
+			pretty = "removed";
+			break;
+		case UNCHANGED:
+			pretty = "unchanged";
+			break;
+		case MAJOR:
+			pretty = "changed in an incompatible way";
+			break;
+		case MICRO:
+			pretty = "changed";
+			break;
+		case MINOR:
+			pretty = "extended";
+			break;
+
+		default:
+			break;
+		}
+		return pretty;
+	}
+
+	private String prettyType(Diff current) {
+		Type type = current.getType();
+		if (type != null && type.toString().length() > 1) {
+			String result = type.toString().toLowerCase();
+			switch (type) {
+			case IMPLEMENTS:
+				result = "interface implementation";
+				break;
+			case EXTENDS:
+				result = "inheritance";
+				break;
+			case RETURN:
+				result = "return type";
+				break;
+			case ACCESS:
+				result = "modifier";
+				break;
+			default:
+				break;
+			}
+			return result;
+		}
+		return "?";
 	}
 
 }

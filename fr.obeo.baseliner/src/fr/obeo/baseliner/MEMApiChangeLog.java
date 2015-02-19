@@ -14,31 +14,31 @@ public class MEMApiChangeLog implements ApiChangeLog {
 		mergedChanges.putAll(changes);
 	}
 
-	public String report() {
+	public String report(ReportFormat formatter) {
 		StringBuffer breakingChangesPart = new StringBuffer();
 		for (Entry<String, Delta> entry : mergedChanges.entrySet()) {
-			String changeDescription = entry.getValue().getBreakingAPIChanges();
+			String changeDescription = entry.getValue().getBreakingAPIChanges(formatter);
 			if (changeDescription != null && changeDescription.length() > 0) {
-				breakingChangesPart.append("\n\nh3. Package @" + entry.getKey() + "@\n\n");
+				breakingChangesPart.append(formatter.packageSection(entry.getKey()));
 				breakingChangesPart.append(changeDescription);
 			}
 		}
 
 		StringBuffer compatibleChangesPart = new StringBuffer();
 		for (Entry<String, Delta> entry : mergedChanges.entrySet()) {
-			String changeDescription = entry.getValue().getCompatibleAPIChanges();
+			String changeDescription = entry.getValue().getCompatibleAPIChanges(formatter);
 			if (changeDescription != null && changeDescription.length() > 0) {
-				compatibleChangesPart.append("\n\nh3. Package @" + entry.getKey() + "@\n\n");
+				breakingChangesPart.append(formatter.packageSection(entry.getKey()));
 				compatibleChangesPart.append(changeDescription);
 			}
 		}
 		StringBuffer report = new StringBuffer();
 		if (breakingChangesPart.length() > 0) {
-			report.append("\n\nh2. Breaking API Changes :\n\n");
+			report.append(formatter.section("Incompatible API Changes"));
 			report.append(breakingChangesPart.toString());
 		}
 		if (compatibleChangesPart.length() > 0) {
-			report.append("\n\nh2. Compatible API Changes :\n\n");
+			report.append(formatter.section("Compatible API Changes"));
 			report.append(compatibleChangesPart.toString());
 		}
 

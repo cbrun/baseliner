@@ -8,9 +8,9 @@ public interface Delta {
 
 	Optional<Version> getSuggestedVersion();
 
-	String getBreakingAPIChanges();
+	String getBreakingAPIChanges(ReportFormat formatter);
 	
-	String getCompatibleAPIChanges();
+	String getCompatibleAPIChanges(ReportFormat formatter);
 
 	Optional<Version> getOldVersion();
 

@@ -6,5 +6,5 @@ public interface ApiChangeLog {
 
 	void aggregate(String projectName, Map<String, Delta> changes) ;
 
-	String report();
+	String report(ReportFormat formatter);
 }

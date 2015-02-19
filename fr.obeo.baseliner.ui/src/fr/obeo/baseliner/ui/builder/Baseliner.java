@@ -34,6 +34,7 @@ import fr.obeo.baseliner.ApiChangeLog;
 import fr.obeo.baseliner.MEMApiChangeLog;
 import fr.obeo.baseliner.ManifestChanges;
 import fr.obeo.baseliner.PluginBaseliner;
+import fr.obeo.baseliner.TextileFormat;
 import fr.obeo.baseliner.ui.BaselinerUIPlugin;
 
 public class Baseliner {
@@ -106,7 +107,7 @@ public class Baseliner {
 		// FIXME encoding ! ! Don't use getBytes
 		InputStream is = null;
 		try {
-			String report = changeLog.report();
+			String report = changeLog.report(new TextileFormat());
 			is = new ByteArrayInputStream(report.getBytes());
 			if (changeFile.exists()) {
 				changeFile.setContents(is, true, true, monitor);
