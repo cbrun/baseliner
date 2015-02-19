@@ -14,6 +14,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
@@ -121,13 +122,19 @@ public class ManifestRewriter {
 	private String addValues(boolean directive, String key, String[] values) {
 		StringBuffer result = new StringBuffer();
 		for (int i = 0; i < values.length; i++) {
-			result.append(';').append(key);
+			String value = values[i];
+			if ((key.equals("uses") | key.equals("x-friends")) && value.contains(",")) {
+				result.append(";\n  ").append(key);
+			} else {
+				result.append(';').append(key);
+			}
 			if (directive)
 				result.append(':');
-			if (values[i].contains(",")) {
-				result.append("=\"").append(values[i]).append('\"'); //$NON-NLS-1$			
+			value = value.replace(",  ", ",\n  ");
+			if (value.contains(",")) {
+				result.append("=\"").append(value).append('\"'); //$NON-NLS-1$			
 			} else {
-				result.append("=").append(values[i]); //$NON-NLS-1$
+				result.append("=").append(value); //$NON-NLS-1$
 			}
 		}
 		return result.toString();
@@ -227,7 +234,8 @@ public class ManifestRewriter {
 				}
 			}
 		}
-		if (this.bundleVersion != null && this.bundleVersion.endsWith(".qualifier") && highestVersion.getQualifier().length() == 0) {
+		if (this.bundleVersion != null && this.bundleVersion.endsWith(".qualifier")
+				&& highestVersion.getQualifier().length() == 0) {
 			highestVersion = new Version(highestVersion.toString() + ".qualifier");
 		}
 		return highestVersion;
