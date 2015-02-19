@@ -24,16 +24,27 @@ public class TextileFormat implements ReportFormat {
 
 	@Override
 	public String change(int deph, String name, String prettyType, String prettyChange) {
-		StringBuffer result = new StringBuffer();
-		for (int i = 0; i < deph; i++) {
-			result.append('*');
-		}
+		StringBuffer result = new StringBuffer();	
 		result.append(" the @" + name + "@ " + prettyType + " has been *" + prettyChange + "*");
 		return result.toString();
 	}
 
 	@Override
 	public String endList(int deph) {
+		return "";
+	}
+
+	@Override
+	public String beginListItem(int depth) {
+		StringBuffer result = new StringBuffer();
+		for (int i = 0; i < depth; i++) {
+			result.append('*');
+		}
+		return result.toString();
+	}
+
+	@Override
+	public String endListItem(int depth) {
 		return "";
 	}
 }

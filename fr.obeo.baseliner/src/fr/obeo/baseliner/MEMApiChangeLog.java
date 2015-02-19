@@ -28,7 +28,7 @@ public class MEMApiChangeLog implements ApiChangeLog {
 		for (Entry<String, Delta> entry : mergedChanges.entrySet()) {
 			String changeDescription = entry.getValue().getCompatibleAPIChanges(formatter);
 			if (changeDescription != null && changeDescription.length() > 0) {
-				breakingChangesPart.append(formatter.packageSection(entry.getKey()));
+				compatibleChangesPart.append(formatter.packageSection(entry.getKey()));
 				compatibleChangesPart.append(changeDescription);
 			}
 		}

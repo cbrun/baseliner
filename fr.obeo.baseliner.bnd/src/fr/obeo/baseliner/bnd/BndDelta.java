@@ -83,24 +83,24 @@ public class BndDelta implements Delta {
 
 	private String prettyPrint(Collection<Diff> diffs, ReportFormat format) {
 		StringBuffer result = new StringBuffer();
-		String indent = "";
 		for (Diff diff : diffs) {
 			if (diff.getType() != Type.PACKAGE && diff.getType() != Type.VERSION
 					&& diff.getDelta() != aQute.bnd.service.diff.Delta.UNCHANGED) {
-				prettyPrintDiff(result, indent, diff, 1, format);
+				prettyPrintDiff(result, diff, 1, format);
 			}
 		}
 		return result.toString();
 
 	}
 
-	private void prettyPrintDiff(StringBuffer result, String indent, Diff diff, int deph, ReportFormat format) {
+	private void prettyPrintDiff(StringBuffer result, Diff diff, int deph, ReportFormat format) {
 		List<? extends Diff> changedChildrens = getChangedChildrens(diff);
-		result.append("\n");
 		if (changedChildrens.size() > 0) {
 			result.append(format.startList(deph, prettyType(diff), diff.getName()));
 			for (Diff child : changedChildrens) {
-				prettyPrintDiff(result, indent + "  ", child, deph + 1, format);
+				result.append(format.beginListItem(deph));
+				prettyPrintDiff(result, child, deph + 1, format);
+				result.append(format.endListItem(deph));
 			}
 			result.append(format.endList(deph));
 		} else {

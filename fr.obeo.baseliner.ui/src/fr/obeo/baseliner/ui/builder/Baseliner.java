@@ -31,6 +31,7 @@ import com.google.common.base.Optional;
 import com.google.common.io.Closeables;
 
 import fr.obeo.baseliner.ApiChangeLog;
+import fr.obeo.baseliner.HtmlFormat;
 import fr.obeo.baseliner.MEMApiChangeLog;
 import fr.obeo.baseliner.ManifestChanges;
 import fr.obeo.baseliner.PluginBaseliner;
@@ -103,11 +104,11 @@ public class Baseliner {
 	}
 
 	public void updateAPIReport(final IProgressMonitor monitor, IProject project) throws CoreException {
-		IFile changeFile = project.getFile("api_changes.textile");
+		IFile changeFile = project.getFile("api_changes.html");
 		// FIXME encoding ! ! Don't use getBytes
 		InputStream is = null;
 		try {
-			String report = changeLog.report(new TextileFormat());
+			String report = changeLog.report(new HtmlFormat());
 			is = new ByteArrayInputStream(report.getBytes());
 			if (changeFile.exists()) {
 				changeFile.setContents(is, true, true, monitor);

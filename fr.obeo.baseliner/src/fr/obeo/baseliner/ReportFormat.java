@@ -12,4 +12,8 @@ public interface ReportFormat {
 
 	String endList(int deph);
 
+	String beginListItem(int depth);
+
+	String endListItem(int depth);
+
 }
