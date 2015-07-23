@@ -1,7 +1,13 @@
 package fr.obeo.baseliner;
 
+import com.google.common.base.Function;
+import com.google.common.html.HtmlEscapers;
+
 public class HtmlFormat implements ReportFormat {
 
+	
+	private Function<String,String> escaper = HtmlEscapers.htmlEscaper().asFunction();
+	
 	@Override
 	public String packageSection(String key) {
 		return "\n<h3>Changes in  <code>" + key + "</code></h3>\n";
@@ -15,19 +21,23 @@ public class HtmlFormat implements ReportFormat {
 	@Override
 	public String startList(int deph, String prettyType, String name) {
 		StringBuffer result = new StringBuffer();		
-		result.append("In " + prettyType + " <tt>" + name + "</tt>:\n");
+		result.append("In " + escape(prettyType) + " <tt>" + escape(name) + "</tt>:\n");
 		indent(deph, result);
 		result.append("<ul>");
 		return result.toString();
+	}
+
+	private String escape(String str) {
+		return escaper.apply(str);
 	}
 
 	@Override
 	public String change(int deph, String name, String prettyType, ChangeQualification prettyChange) {
 		StringBuffer b = new StringBuffer();
 		b.append("<span class=\"" + getCssClass(prettyChange) + "\">");
-		b.append(prettyChange.getLabel());
+		b.append(escape(prettyChange.getLabel()));
 		b.append("</span>");
-		b.append(" the <code>" + name + "</code> " + prettyType);
+		b.append(" the <code>" + escape(name) + "</code> " + escape(prettyType));
 		return b.toString();
 	}
 

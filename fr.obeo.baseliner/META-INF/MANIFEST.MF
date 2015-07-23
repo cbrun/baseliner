@@ -9,7 +9,9 @@ Export-Package: fr.obeo.baseliner
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: com.google.common.base;version="12.0.0",
  com.google.common.collect,
+ com.google.common.escape;version="15.0.0",
  com.google.common.hash;version="15.0.0",
+ com.google.common.html;version="15.0.0",
  com.google.common.io;version="11.0.2",
  org.eclipse.osgi.framework.util,
  org.eclipse.osgi.util,
