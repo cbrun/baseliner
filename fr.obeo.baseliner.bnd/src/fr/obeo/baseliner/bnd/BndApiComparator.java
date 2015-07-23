@@ -107,9 +107,8 @@ public class BndApiComparator implements ApiComparator {
 		try {
 			return oldJar.getVersion();
 		} catch (Exception e) {
-		
+			throw new RuntimeException(e);
 		}
-		return null;
 	}
 	
 
@@ -126,11 +125,9 @@ public class BndApiComparator implements ApiComparator {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		return result;
 	}

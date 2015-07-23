@@ -75,7 +75,8 @@ public class BndDelta implements Delta {
 		List<Diff> compatible = Lists.newArrayList();
 		for (Diff child : info.packageDiff.getChildren()) {
 			if (child.getDelta() == aQute.bnd.service.diff.Delta.MINOR
-					|| child.getDelta() == aQute.bnd.service.diff.Delta.MICRO) {
+					|| child.getDelta() == aQute.bnd.service.diff.Delta.MICRO
+					|| child.getDelta() == aQute.bnd.service.diff.Delta.ADDED) {
 				compatible.add(child);
 			}
 		}
@@ -97,13 +98,22 @@ public class BndDelta implements Delta {
 	private void prettyPrintDiff(StringBuffer result, Diff diff, int deph, ReportFormat format) {
 		List<? extends Diff> changedChildrens = getChangedChildrens(diff);
 		if (changedChildrens.size() > 0) {
-			result.append(format.startList(deph, prettyType(diff), diff.getName()));
+			boolean sameDeltaKind = false;
+
 			for (Diff child : changedChildrens) {
-				result.append(format.beginListItem(deph));
-				prettyPrintDiff(result, child, deph + 1, format);
-				result.append(format.endListItem(deph));
+				sameDeltaKind = !sameDeltaKind && diff.getDelta() == child.getDelta();
 			}
-			result.append(format.endList(deph));
+			if (!sameDeltaKind) {
+				result.append(format.startList(deph, prettyType(diff), diff.getName()));
+				for (Diff child : changedChildrens) {
+					result.append(format.beginListItem(deph));
+					prettyPrintDiff(result, child, deph + 1, format);
+					result.append(format.endListItem(deph));
+				}
+				result.append(format.endList(deph));
+			} else {
+				result.append(format.change(deph, diff.getName(), prettyType(diff), prettyChange(diff.getDelta())));
+			}
 		} else {
 			result.append(format.change(deph, diff.getName(), prettyType(diff), prettyChange(diff.getDelta())));
 		}
