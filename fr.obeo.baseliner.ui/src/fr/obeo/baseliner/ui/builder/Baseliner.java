@@ -77,6 +77,7 @@ public class Baseliner {
 
 				if (!monitor.isCanceled()) {
 					baseliner.setJarProviderSource(BaselinerPreferences.getJarProviderSource(project));
+					baseliner.setNSToIgnore(BaselinerPreferences.getNamespacesToIgnore(project));
 					ManifestChanges change = baseliner.updateManifestFile(new File(manifestFile.getLocation()
 							.toOSString()), declareJavaOutputFolders(baseliner, javaProject), Collections.EMPTY_LIST,
 							monitor);

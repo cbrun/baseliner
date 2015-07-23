@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -19,6 +20,7 @@ import org.osgi.framework.Version;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class PluginBaseliner {
 
@@ -29,6 +31,8 @@ public class PluginBaseliner {
 	private ManifestCleanup cleanup = new NOOPManifestCleanup();
 
 	private String jarProviderSource = "platform:/pde/apibaselines";
+	
+	private Set<String> namespacesToIgnoreForBundleVersion = Sets.newLinkedHashSet();
 
 	public synchronized void setBaselineJarProvider(BaselinerJarProvider jarProvider) {
 		this.jarProvider = Optional.of(jarProvider);
@@ -111,9 +115,9 @@ public class PluginBaseliner {
 				for (Entry<String, Version> exportedPackage : manifestHandler.getExportedPackages().entrySet()) {
 
 					String ns = exportedPackage.getKey();
-
+					
 					Delta d = result.get(ns);
-					if (d != null) {
+					if (d != null && !isIgnored(ns)) {
 						Version inferedVersion = new Version(manifestHandler.getBundleVersion());
 						if (d.getNewVersion().isPresent()) {
 							inferedVersion = d.getNewVersion().get();
@@ -206,9 +210,16 @@ public class PluginBaseliner {
 		return ManifestChanges.NOCHANGE;
 	}
 
+	private boolean isIgnored(String ns) {
+		return this.namespacesToIgnoreForBundleVersion.contains(ns);
+	}
+
 	public void setJarProviderSource(String sourceURI) {
 		this.jarProviderSource = sourceURI;
-
+	}
+	
+	public void setNSToIgnore(Set<String> namespacesToIgnore) {
+		this.namespacesToIgnoreForBundleVersion = namespacesToIgnore;
 	}
 
 }

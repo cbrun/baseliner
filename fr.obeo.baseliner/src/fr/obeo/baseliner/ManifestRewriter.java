@@ -245,6 +245,9 @@ public class ManifestRewriter {
 			if (extraExtension != null && extraExtension.contains("x-internal:=")) {
 				return true;
 			}
+			if (extraExtension != null && extraExtension.contains("x-friends:=")) {
+				return true;
+			}
 		}
 		return false;
 	}
