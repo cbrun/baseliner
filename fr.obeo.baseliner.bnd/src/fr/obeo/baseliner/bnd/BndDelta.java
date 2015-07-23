@@ -165,4 +165,14 @@ public class BndDelta implements Delta {
 		return "?";
 	}
 
+	@Override
+	public boolean hasBreakingAPIChanges() {
+		return getBreakingChanges().size() > 0;
+	}
+
+	@Override
+	public boolean hasCompatibleAPIChanges() {
+		return getCompatibleChanges().size() > 0;
+	}
+
 }

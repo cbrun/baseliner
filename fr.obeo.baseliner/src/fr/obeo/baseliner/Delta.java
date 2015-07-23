@@ -14,6 +14,10 @@ public interface Delta {
 
 	Optional<Version> getOldVersion();
 
-	Optional<Version> getNewVersion();	
+	Optional<Version> getNewVersion();
+
+	boolean hasBreakingAPIChanges();	
+	
+	boolean hasCompatibleAPIChanges();
 
 }

@@ -115,7 +115,7 @@ public class PluginBaseliner {
 				for (Entry<String, Version> exportedPackage : manifestHandler.getExportedPackages().entrySet()) {
 
 					String ns = exportedPackage.getKey();
-					
+
 					Delta d = result.get(ns);
 					if (d != null && !isIgnored(ns)) {
 						Version inferedVersion = new Version(manifestHandler.getBundleVersion());
@@ -133,12 +133,12 @@ public class PluginBaseliner {
 								&& inferedVersion.getMicro() == 0) {
 							inferedVersion = new Version(manifestHandler.getBundleVersion());
 						}
-						if (!hasBreakingChange && d.getOldVersion().isPresent() && !manifestHandler.isMarkedInternal(ns)) {
-							hasBreakingChange = d.getOldVersion().get().getMajor() != inferedVersion.getMajor();
-						}
-						if (!hasBreakingChange && !hasMinorChange && d.getOldVersion().isPresent() && !manifestHandler.isMarkedInternal(ns)) {
-							hasMinorChange = d.getOldVersion().get().getMinor() != inferedVersion.getMinor();
-						}
+
+						hasBreakingChange = !hasBreakingChange && !manifestHandler.isMarkedInternal(ns)
+								&& d.hasBreakingAPIChanges();
+						hasMinorChange = !hasMinorChange && !hasBreakingChange && !manifestHandler.isMarkedInternal(ns)
+								&& d.hasCompatibleAPIChanges();
+
 						manifestHandler.setPackageVersion(ns, inferedVersion);
 					}
 				}
@@ -147,16 +147,18 @@ public class PluginBaseliner {
 				if (apiComparator.get().getOldVersion() == null) {
 					bundleVersionToSet = manifestHandler.getHighestExportedVersion();
 				} else {
-					Version fromOldJar = new Version(apiComparator.get().getOldVersion());					
-					bundleVersionToSet = new Version(fromOldJar.getMajor(),fromOldJar.getMinor(),fromOldJar.getMicro(),"qualifier");
+					Version fromOldJar = new Version(apiComparator.get().getOldVersion());
+					bundleVersionToSet = new Version(fromOldJar.getMajor(), fromOldJar.getMinor(),
+							fromOldJar.getMicro(), "qualifier");
 				}
 				if (hasBreakingChange) {
 					int upgradedMajor = bundleVersionToSet.getMajor() + 1;
 					bundleVersionToSet = new Version(upgradedMajor, 0, 0, bundleVersionToSet.getQualifier());
 				} else if (hasMinorChange) {
-					bundleVersionToSet = new Version(bundleVersionToSet.getMajor(),bundleVersionToSet.getMinor() + 1, 0, bundleVersionToSet.getQualifier());
+					bundleVersionToSet = new Version(bundleVersionToSet.getMajor(), bundleVersionToSet.getMinor() + 1,
+							0, bundleVersionToSet.getQualifier());
 				}
-				if (manifestHandler.getBundleVersion()!=null) {
+				if (manifestHandler.getBundleVersion() != null) {
 					Version fromCurrentSource = new Version(manifestHandler.getBundleVersion());
 					if (fromCurrentSource.compareTo(bundleVersionToSet) > 0) {
 						bundleVersionToSet = fromCurrentSource;
@@ -217,7 +219,7 @@ public class PluginBaseliner {
 	public void setJarProviderSource(String sourceURI) {
 		this.jarProviderSource = sourceURI;
 	}
-	
+
 	public void setNSToIgnore(Set<String> namespacesToIgnore) {
 		this.namespacesToIgnoreForBundleVersion = namespacesToIgnore;
 	}
