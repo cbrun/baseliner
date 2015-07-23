@@ -103,6 +103,14 @@ public class BndApiComparator implements ApiComparator {
 
 	}
 
+	public String getOldVersion() {
+		try {
+			return oldJar.getVersion();
+		} catch (Exception e) {
+		
+		}
+		return null;
+	}
 	
 
 	@Override

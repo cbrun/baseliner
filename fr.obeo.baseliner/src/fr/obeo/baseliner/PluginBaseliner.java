@@ -94,9 +94,8 @@ public class PluginBaseliner {
 					if (jar != null) {
 						apiComparator.get().loadOldClassesFromFolder(jar);
 					} else {
-						statusesToReport
-								.add(new Status(IStatus.WARNING, "fr.obeo.baseliner", "Could not find a "
-										+ manifestHandler.getSymbolicName() + " bundle in the baseline : "
+						statusesToReport.add(new Status(IStatus.WARNING, "fr.obeo.baseliner",
+								"Could not find a " + manifestHandler.getSymbolicName() + " bundle in the baseline : "
 										+ jarProviderSource));
 						ManifestChanges manifestChanges = new ManifestChanges(result, Optional.<String> absent(),
 								Optional.<Version> absent());
@@ -107,7 +106,8 @@ public class PluginBaseliner {
 					}
 				}
 				result = apiComparator.get().diffByPackage();
-
+				boolean hasBreakingChange = false;
+				boolean hasMinorChange = false;
 				for (Entry<String, Version> exportedPackage : manifestHandler.getExportedPackages().entrySet()) {
 
 					String ns = exportedPackage.getKey();
@@ -125,19 +125,44 @@ public class PluginBaseliner {
 						if (d.getSuggestedVersion().isPresent() && !d.getSuggestedVersion().get().equals(NONE)) {
 							inferedVersion = d.getSuggestedVersion().get();
 						}
-						if (inferedVersion.getMajor() == 0 && inferedVersion.getMinor() == 0 && inferedVersion.getMicro() == 0) {
+						if (inferedVersion.getMajor() == 0 && inferedVersion.getMinor() == 0
+								&& inferedVersion.getMicro() == 0) {
 							inferedVersion = new Version(manifestHandler.getBundleVersion());
+						}
+						if (!hasBreakingChange && d.getOldVersion().isPresent() && !manifestHandler.isMarkedInternal(ns)) {
+							hasBreakingChange = d.getOldVersion().get().getMajor() != inferedVersion.getMajor();
+						}
+						if (!hasBreakingChange && !hasMinorChange && d.getOldVersion().isPresent() && !manifestHandler.isMarkedInternal(ns)) {
+							hasMinorChange = d.getOldVersion().get().getMinor() != inferedVersion.getMinor();
 						}
 						manifestHandler.setPackageVersion(ns, inferedVersion);
 					}
 				}
 
-				Version bundleVersionToSet = manifestHandler.getHighestExportedVersion();
+				Version bundleVersionToSet = new Version(0, 0, 0);
+				if (apiComparator.get().getOldVersion() == null) {
+					bundleVersionToSet = manifestHandler.getHighestExportedVersion();
+				} else {
+					Version fromOldJar = new Version(apiComparator.get().getOldVersion());					
+					bundleVersionToSet = new Version(fromOldJar.getMajor(),fromOldJar.getMinor(),fromOldJar.getMicro(),"qualifier");
+				}
+				if (hasBreakingChange) {
+					int upgradedMajor = bundleVersionToSet.getMajor() + 1;
+					bundleVersionToSet = new Version(upgradedMajor, 0, 0, bundleVersionToSet.getQualifier());
+				} else if (hasMinorChange) {
+					bundleVersionToSet = new Version(bundleVersionToSet.getMajor(),bundleVersionToSet.getMinor() + 1, 0, bundleVersionToSet.getQualifier());
+				}
+				if (manifestHandler.getBundleVersion()!=null) {
+					Version fromCurrentSource = new Version(manifestHandler.getBundleVersion());
+					if (fromCurrentSource.compareTo(bundleVersionToSet) > 0) {
+						bundleVersionToSet = fromCurrentSource;
+					}
+				}
 				manifestHandler.setNewBundleVersion(bundleVersionToSet);
 
 				Optional<String> newContent = manifestHandler.update(manifestFile);
-				boolean bundleVersionIsChanging = !bundleVersionToSet.toString().equals(
-						manifestHandler.getBundleVersion());
+				boolean bundleVersionIsChanging = !bundleVersionToSet.toString()
+						.equals(manifestHandler.getBundleVersion());
 
 				if (bundleVersionIsChanging && manifestFile.getParentFile() != null
 						&& manifestFile.getParentFile().getParentFile() != null && !monitor.isCanceled()) {

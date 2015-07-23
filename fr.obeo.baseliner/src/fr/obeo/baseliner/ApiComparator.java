@@ -10,4 +10,6 @@ public interface ApiComparator {
 	public void loadOldClassesFromFolder(File folder) throws RuntimeException;
 
 	public Map<String, Delta> diffByPackage();
+	
+	public String getOldVersion();
 }
