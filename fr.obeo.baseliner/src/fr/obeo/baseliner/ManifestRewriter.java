@@ -214,7 +214,6 @@ public class ManifestRewriter {
 	}
 
 	public Version getHighestExportedVersion() {
-		String result = bundleVersion;
 		Version highestVersion = new Version(bundleVersion);
 		for (String ns : exportedPackages.keySet()) {
 			/*

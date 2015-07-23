@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 
 import fr.obeo.baseliner.Delta;
 import fr.obeo.baseliner.ReportFormat;
+import fr.obeo.baseliner.ReportFormat.ChangeQualification;
 
 public class BndDelta implements Delta {
 
@@ -118,32 +119,25 @@ public class BndDelta implements Delta {
 		}));
 	}
 
-	private String prettyChange(aQute.bnd.service.diff.Delta d) {
+	private ChangeQualification prettyChange(aQute.bnd.service.diff.Delta d) {
 		String pretty = d.toString();
 		switch (d) {
 		case ADDED:
-			pretty = "added";
-			break;
+			return ReportFormat.ChangeQualification.ADDED;
 		case REMOVED:
-			pretty = "removed";
-			break;
+			return ReportFormat.ChangeQualification.REMOVED;
 		case UNCHANGED:
-			pretty = "unchanged";
-			break;
+			return ReportFormat.ChangeQualification.UNCHANGED;
 		case MAJOR:
-			pretty = "changed in an incompatible way";
-			break;
+			return ReportFormat.ChangeQualification.MAJOR;
 		case MICRO:
-			pretty = "changed";
-			break;
+			return ReportFormat.ChangeQualification.MICRO;
 		case MINOR:
-			pretty = "extended";
-			break;
-
+			return ReportFormat.ChangeQualification.MINOR;
 		default:
 			break;
 		}
-		return pretty;
+		return ReportFormat.ChangeQualification.UNCHANGED;
 	}
 
 	private String prettyType(Diff current) {

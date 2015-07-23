@@ -33,6 +33,7 @@ public class MEMApiChangeLog implements ApiChangeLog {
 			}
 		}
 		StringBuffer report = new StringBuffer();
+		report.append(formatter.beginDocument());
 		if (breakingChangesPart.length() > 0) {
 			report.append(formatter.section("Incompatible API Changes"));
 			report.append(breakingChangesPart.toString());
@@ -41,7 +42,7 @@ public class MEMApiChangeLog implements ApiChangeLog {
 			report.append(formatter.section("Compatible API Changes"));
 			report.append(compatibleChangesPart.toString());
 		}
-
+		report.append(formatter.endDocument());
 		return report.toString();
 	}
 

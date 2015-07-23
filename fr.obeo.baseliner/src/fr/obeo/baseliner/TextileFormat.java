@@ -23,9 +23,9 @@ public class TextileFormat implements ReportFormat {
 	}
 
 	@Override
-	public String change(int deph, String name, String prettyType, String prettyChange) {
+	public String change(int deph, String name, String prettyType, ChangeQualification prettyChange) {
 		StringBuffer result = new StringBuffer();	
-		result.append(" the @" + name + "@ " + prettyType + " has been *" + prettyChange + "*");
+		result.append(" the @" + name + "@ " + prettyType + " has been *" + prettyChange.getLabel() + "*");
 		return result.toString();
 	}
 
@@ -45,6 +45,16 @@ public class TextileFormat implements ReportFormat {
 
 	@Override
 	public String endListItem(int depth) {
+		return "";
+	}
+
+	@Override
+	public String beginDocument() {
+		return "";
+	}
+
+	@Override
+	public String endDocument() {
 		return "";
 	}
 }
