@@ -10,9 +10,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.pde.internal.ui.wizards.tools.OrganizeManifestsProcessor;
+import org.osgi.service.component.annotations.Component;
 
 import fr.obeo.baseliner.ManifestCleanup;
 
+@Component
 public class PDEManifestCleanup implements ManifestCleanup {
 
 	private void clean(Collection<IProject> projects, IProgressMonitor pm) {

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="fr.obeo.baseliner.pde.cleanup">
-   <implementation class="fr.obeo.baseliner.pde.PDEManifestCleanup"/>
-   <service>
-      <provide interface="fr.obeo.baseliner.ManifestCleanup"/>
-   </service>
-</scr:component>

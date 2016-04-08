@@ -10,6 +10,7 @@ location "http://download.eclipse.org/releases/mars" {
 	org.eclipse.jdt.feature.group lazy
 	org.eclipse.emf.sdk.feature.group lazy
 	org.junit lazy
+	org.eclipse.osgi.services lazy
 }
 
 location "http://bndtools-updates.s3.amazonaws.com/" {

@@ -16,12 +16,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.Version;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+@Component
 public class PluginBaseliner {
 
 	private Optional<BaselinerJarProvider> jarProvider;
@@ -31,9 +35,10 @@ public class PluginBaseliner {
 	private ManifestCleanup cleanup = new NOOPManifestCleanup();
 
 	private String jarProviderSource = "platform:/pde/apibaselines";
-	
+
 	private Set<String> namespacesToIgnoreForBundleVersion = Sets.newLinkedHashSet();
 
+	@Reference
 	public synchronized void setBaselineJarProvider(BaselinerJarProvider jarProvider) {
 		this.jarProvider = Optional.of(jarProvider);
 	}
@@ -44,6 +49,7 @@ public class PluginBaseliner {
 		}
 	}
 
+	@Reference(cardinality = ReferenceCardinality.OPTIONAL)
 	public synchronized void setManifestCleanup(ManifestCleanup cleanup) {
 		this.cleanup = cleanup;
 	}
@@ -54,7 +60,7 @@ public class PluginBaseliner {
 		}
 	}
 
-	// Method will be used by DS to set the quote service
+	@Reference
 	public synchronized void setApiComparator(ApiComparator apiComparator) {
 		this.apiComparator = Optional.of(apiComparator);
 	}
@@ -101,8 +107,8 @@ public class PluginBaseliner {
 						statusesToReport.add(new Status(IStatus.WARNING, "fr.obeo.baseliner",
 								"Could not find a " + manifestHandler.getSymbolicName() + " bundle in the baseline : "
 										+ jarProviderSource));
-						ManifestChanges manifestChanges = new ManifestChanges(result, Optional.<String> absent(),
-								Optional.<Version> absent());
+						ManifestChanges manifestChanges = new ManifestChanges(result, Optional.<String>absent(),
+								Optional.<Version>absent());
 						for (IStatus iStatus : statusesToReport) {
 							manifestChanges.addStatus(iStatus);
 						}
@@ -193,7 +199,7 @@ public class PluginBaseliner {
 					return manifestChange;
 				} else {
 					ManifestChanges manifestChange = new ManifestChanges(result, newContent,
-							Optional.<Version> absent());
+							Optional.<Version>absent());
 					for (IStatus iStatus : statusesToReport) {
 						manifestChange.addStatus(iStatus);
 					}

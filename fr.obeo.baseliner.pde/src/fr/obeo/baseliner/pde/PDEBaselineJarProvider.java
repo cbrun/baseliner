@@ -19,6 +19,7 @@ import org.eclipse.pde.api.tools.internal.provisional.model.IApiComponent;
 import org.eclipse.pde.core.target.ITargetDefinition;
 import org.eclipse.pde.core.target.TargetBundle;
 import org.eclipse.pde.internal.core.target.WorkspaceFileTargetHandle;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.common.collect.Maps;
 import com.google.common.hash.HashCode;
@@ -28,6 +29,7 @@ import com.google.common.io.Files;
 
 import fr.obeo.baseliner.BaselinerJarProvider;
 
+@Component
 public class PDEBaselineJarProvider implements BaselinerJarProvider {
 
 	private Map<String, ITargetDefinition> platformPathToTargetDefinition = Maps.newHashMap();

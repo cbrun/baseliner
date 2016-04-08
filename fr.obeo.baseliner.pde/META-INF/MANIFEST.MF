@@ -8,8 +8,8 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: fr.obeo.baseliner,
  org.eclipse.equinox.frameworkadmin;version="2.0.0",
  org.osgi.framework;version="1.7.0"
-Service-Component: OSGI-INF/component.xml,
- OSGI-INF/cleanup.xml
+Service-Component: OSGI-INF/fr.obeo.baseliner.pde.PDEBaselineJarProvider.xml,
+ OSGI-INF/fr.obeo.baseliner.pde.PDEManifestCleanup.xml
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.equinox.util,
  org.eclipse.equinox.ds,

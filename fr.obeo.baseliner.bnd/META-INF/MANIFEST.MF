@@ -17,7 +17,6 @@ Import-Package: aQute.bnd.differ;version="1.0.0",
  com.google.common.io,
  fr.obeo.baseliner,
  org.osgi.framework
-Service-Component: OSGI-INF/apicomparator.xml
 Require-Bundle: org.eclipse.equinox.util,
  org.eclipse.equinox.ds,
  org.eclipse.osgi.services,
@@ -26,3 +25,4 @@ Require-Bundle: org.eclipse.equinox.util,
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Localization: plugin
+Service-Component: OSGI-INF/fr.obeo.baseliner.bnd.BndApiComparator.xml

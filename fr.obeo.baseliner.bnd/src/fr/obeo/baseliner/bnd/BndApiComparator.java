@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.osgi.service.component.annotations.Component;
+
 import aQute.bnd.differ.Baseline;
 import aQute.bnd.differ.Baseline.Info;
 import aQute.bnd.differ.DiffPluginImpl;
@@ -19,6 +21,7 @@ import aQute.service.reporter.Reporter;
 import fr.obeo.baseliner.ApiComparator;
 import fr.obeo.baseliner.Delta;
 
+@Component
 public class BndApiComparator implements ApiComparator {
 
 	private Jar oldJar;
