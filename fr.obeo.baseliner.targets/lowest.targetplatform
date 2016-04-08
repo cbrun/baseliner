@@ -1,9 +1,5 @@
 target "Lowest Bounds For Baseliner"
 
-//include "http://git.eclipse.org/c/simrel/org.eclipse.simrel.build.git/plain/emft-eef.b3aggrcon"
-
-//include "http://git.eclipse.org/c/simrel/org.eclipse.simrel.build.git/plain/emf-cdo.b3aggrcon?id=KeplerSR1"
-
 location "http://download.eclipse.org/eclipse/updates/4.4/R-4.4.1-201409250400" {
 	org.eclipse.equinox.common [3.6.200,4.0.0)
 	org.eclipse.equinox.ds [1.4.200,2.0.0)

@@ -1,0 +1,22 @@
+target "Runnable TP for Baseliner"
+
+
+
+
+location "http://download.eclipse.org/releases/mars" {
+	org.eclipse.rcp.feature.group lazy
+	org.eclipse.sdk.feature.group lazy
+	org.eclipse.pde.feature.group lazy
+	org.eclipse.jdt.feature.group lazy
+	org.eclipse.emf.sdk.feature.group lazy
+	org.junit lazy
+}
+
+location "http://bndtools-updates.s3.amazonaws.com/" {
+	biz.aQute.bndlib
+}
+
+location "http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/" {
+	com.google.guava [15.0.0,16.0.0)
+	org.kohsuke.args4j [2.0.12,3.0.0)
+}

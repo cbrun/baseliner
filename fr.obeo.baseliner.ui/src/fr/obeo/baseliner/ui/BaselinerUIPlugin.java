@@ -8,6 +8,8 @@ import fr.obeo.baseliner.PluginBaseliner;
 
 public class BaselinerUIPlugin extends AbstractUIPlugin {
 
+	public static final String ID = "fr.obeo.dsl.baseliner.ui";
+
 	public PluginBaseliner baseliner;
 
 	public ServiceReference<?> serviceReference;

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde?>
+<!-- generated with https://github.com/mbarbero/fr.obeo.releng.targetplatform -->
+<target name="Runnable TP for Baseliner" sequenceNumber="1460110369">
+  <locations>
+    <location includeMode="slicer" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="org.eclipse.rcp.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.pde.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.jdt.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
+      <unit id="org.junit" version="0.0.0"/>
+      <repository location="http://download.eclipse.org/releases/mars"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="biz.aQute.bndlib" version="2.4.0.201411031534"/>
+      <repository location="http://bndtools-updates.s3.amazonaws.com/"/>
+    </location>
+    <location includeMode="slicer" includeAllPlatforms="false" includeSource="false" includeConfigurePhase="false" type="InstallableUnit">
+      <unit id="com.google.guava" version="15.0.0.v201403281430"/>
+      <unit id="org.kohsuke.args4j" version="2.0.21.v201301150030"/>
+      <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/"/>
+    </location>
+  </locations>
+</target>

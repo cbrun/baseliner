@@ -34,7 +34,12 @@
 		        defaultHandler="fr.obeo.baseliner.ui.builder.ToggleNatureHandler"
 		        id="fr.obeo.baseliner.ui.addRemoveNatureCommand"
 		        name="Enable or Disable Semantic Versioning">
-		</command>		
+		</command>
+		<command
+		        categoryId="org.eclipse.ui.category.file"		        
+		        id="fr.obeo.baseline.ui.commands.DisableBuilderCommand"
+		        name="Disable Semantic Versioning for the workspace">
+		</command>  
 	</extension>
 	
 	
@@ -142,6 +147,39 @@
          <super
                type="org.eclipse.core.resources.problemmarker">
          </super>
-      </extension> 
-     
+  </extension>
+  
+  <extension point="org.eclipse.ui.actionSets">
+   		<actionSet
+            label="OSGi Semantic Versionning"
+            visible="true"
+            id="fr.obeo.baseliner.ActionSet">
+         <action
+               definitionId="fr.obeo.baseline.ui.commands.DisableBuilderCommand"
+               label="Disable Semantic versioning."
+               tooltip="Disable OSGi semantic versioning for this workspace."
+               icon="$nl$/icons/full/ecl16/version.gif"               
+               class="fr.obeo.baseliner.ui.action.DisableOsgiSemanticVersioningBuilder"
+               toolbarPath="fr.obeo.baseliner.ui.main.toolbar/builderGroup"
+               style="toggle"
+               id="fr.obeo.baseline.ui.commands.DisableBuilderAction">
+         </action>
+       </actionSet>
+  </extension> 
+  
+  <extension 
+         point="org.eclipse.ui.menus">
+          <menuContribution
+             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+            <toolbar
+                id="fr.obeo.baseliner.ui.main.toolbar"
+                label="OSGi Semantic Versioning">
+             <separator
+                   name="builderGroup"
+                   visible="true">
+             </separator>             
+          </toolbar>
+       </menuContribution>
+  </extension>
+  
 </plugin>
