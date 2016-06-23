@@ -50,18 +50,23 @@ public class PDEInspector {
 
 	private static final String TMP_TP_PATH = TMP_PROJECT + "/" + TP_FILENAME;
 
-	private static final int TIMEOUT_IN_SEC = 30;
+	private static final int TIMEOUT_IN_SEC = 300;
 
 	private Optional<ITargetPlatformService> service;
 
 	public PDEInspector() {
-		service = Optional.fromNullable(
-				(ITargetPlatformService) PDECore.getDefault().acquireService(ITargetPlatformService.class.getName()));
+		service = Optional.absent();
+		
 	}
 
 	public void inspectProduct(File installationFolder, File reportsFolder, IProgressMonitor monitor)
 			throws IOException {
 
+		waitForjobsToFinish();
+		
+		service = Optional.fromNullable(
+				(ITargetPlatformService) PDECore.getDefault().acquireService(ITargetPlatformService.class.getName()));
+		
 		File extensionsFolder = new File(reportsFolder.getAbsolutePath() + File.separator + "extensions");
 
 		if (installationFolder != null) {
@@ -69,6 +74,8 @@ public class PDEInspector {
 		} else {
 			setTargetPlatformToRuntime(monitor);
 		}
+
+		waitForjobsToFinish();
 
 		File pluginsFile = new File(reportsFolder.getAbsolutePath() + File.separator + "plugins");
 		Files.createParentDirs(pluginsFile);
@@ -176,6 +183,8 @@ public class PDEInspector {
 	}
 
 	private void setInstallationAsTargetPlatform(File installationFolder, IProgressMonitor monitor) throws IOException {
+		BaselinerAppPlugin.INSTANCE.log(new Status(IStatus.INFO, BaselinerAppPlugin.INSTANCE.getSymbolicName(),
+				"Setting " + installationFolder.getAbsolutePath() + " as the target platform."));
 		try {
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 			if (root != null) {
@@ -201,9 +210,6 @@ public class PDEInspector {
 				}
 
 				setTargetPlatformToFile(monitor);
-
-				waitForjobsToFinish();
-
 			}
 		} catch (CoreException e) {
 			BaselinerAppPlugin.INSTANCE.log(new Status(IStatus.ERROR, BaselinerAppPlugin.INSTANCE.getSymbolicName(),
@@ -211,29 +217,33 @@ public class PDEInspector {
 		} catch (UnsupportedEncodingException e) {
 			BaselinerAppPlugin.INSTANCE.log(new Status(IStatus.ERROR, BaselinerAppPlugin.INSTANCE.getSymbolicName(),
 					"Error setting folder as target platfrorm" + installationFolder.getAbsolutePath() + " .", e));
-		} catch (InterruptedException e) {
-			BaselinerAppPlugin.INSTANCE.log(new Status(IStatus.ERROR, BaselinerAppPlugin.INSTANCE.getSymbolicName(),
-					"Error setting folder as target platfrorm" + installationFolder.getAbsolutePath() + " .", e));
 		}
 	}
 
-	private void waitForjobsToFinish() throws InterruptedException {
-		int secondsWaiting = 0;
-		while (!Job.getJobManager().isIdle() && secondsWaiting <= TIMEOUT_IN_SEC) {
-			Job currentJob = Job.getJobManager().currentJob();
-			String jobName = "unknown";
-			ISchedulingRule currentrule = Job.getJobManager().currentRule();
-			if (currentrule != null) {
-				jobName = currentrule.toString();
-			}
-			if (currentJob != null) {
-				jobName = currentJob.getName();
-				if (jobName == null) {
-					jobName = currentJob.getClass().getCanonicalName();
+	private void waitForjobsToFinish() {
+		BaselinerAppPlugin.INSTANCE.log(
+				new Status(IStatus.INFO, BaselinerAppPlugin.INSTANCE.getSymbolicName(), "Waiting for jobs to finish."));
+		try {
+			int secondsWaiting = 0;
+			while (!Job.getJobManager().isIdle() && secondsWaiting <= TIMEOUT_IN_SEC) {
+				Job currentJob = Job.getJobManager().currentJob();
+				String jobName = "unknown";
+				ISchedulingRule currentrule = Job.getJobManager().currentRule();
+				if (currentrule != null) {
+					jobName = currentrule.toString();
 				}
+				if (currentJob != null) {
+					jobName = currentJob.getName();
+					if (jobName == null) {
+						jobName = currentJob.getClass().getCanonicalName();
+					}
+				}
+				Thread.sleep(1000);
+				secondsWaiting++;
 			}
-			Thread.sleep(1000);
-			secondsWaiting++;
+		} catch (InterruptedException e) {
+			BaselinerAppPlugin.INSTANCE.log(new Status(IStatus.ERROR, BaselinerAppPlugin.INSTANCE.getSymbolicName(),
+					"Error while waiting for jobs termination.", e));
 		}
 	}
 
@@ -252,6 +262,9 @@ public class PDEInspector {
 					}
 				}
 			}
+		} else {
+			BaselinerAppPlugin.INSTANCE.log(new Status(IStatus.WARNING, BaselinerAppPlugin.INSTANCE.getSymbolicName(),
+					"TargetPlatformService could not be acquired."));
 		}
 	}
 
@@ -273,6 +286,9 @@ public class PDEInspector {
 					}
 				}
 			}
+		} else {
+			BaselinerAppPlugin.INSTANCE.log(new Status(IStatus.WARNING, BaselinerAppPlugin.INSTANCE.getSymbolicName(),
+					"TargetPlatformService could not be acquired."));
 		}
 	}
 
