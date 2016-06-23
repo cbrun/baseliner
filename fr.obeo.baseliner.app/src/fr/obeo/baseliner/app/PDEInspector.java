@@ -25,7 +25,6 @@ import org.eclipse.pde.core.plugin.PluginRegistry;
 import org.eclipse.pde.core.target.ITargetDefinition;
 import org.eclipse.pde.core.target.ITargetHandle;
 import org.eclipse.pde.core.target.ITargetPlatformService;
-import org.eclipse.pde.internal.core.FeatureModelManager;
 import org.eclipse.pde.internal.core.PDECore;
 import org.eclipse.pde.internal.core.ifeature.IFeatureModel;
 import org.eclipse.pde.internal.core.target.WorkspaceFileTargetHandle;
@@ -33,11 +32,13 @@ import org.eclipse.pde.internal.core.target.WorkspaceFileTargetHandle;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
+import com.google.common.primitives.Ints;
 
 public class PDEInspector {
 
@@ -86,8 +87,8 @@ public class PDEInspector {
 						if (object instanceof IPluginElement) {
 							IPluginElement element = (IPluginElement) object;
 							String id = getAttributeValue(element, "id");
-							if (id==null) {
-								id= "no-id";
+							if (id == null) {
+								id = "no-id";
 							}
 							String name = getAttributeValue(element, "name");
 							StringBuffer out = new StringBuffer();
@@ -136,10 +137,15 @@ public class PDEInspector {
 
 		File featureFile = new File(reportsFolder.getAbsolutePath() + File.separator + "features");
 		Files.createParentDirs(featureFile);
-		FileWriter featuresWriter = new FileWriter(
-				featureFile);
-
-		for (IFeatureModel feature : PDECore.getDefault().getFeatureModelManager().getModels()) {
+		FileWriter featuresWriter = new FileWriter(featureFile);
+		Ordering<IFeatureModel> orderFeatures = new Ordering<IFeatureModel>() {
+			@Override
+			public int compare(IFeatureModel s1, IFeatureModel s2) {
+				return s1.getFeature().getId().compareTo(s2.getFeature().getId());
+			}
+		};
+		for (IFeatureModel feature : orderFeatures
+				.immutableSortedCopy(Lists.newArrayList(PDECore.getDefault().getFeatureModelManager().getModels()))) {
 			File fileOrFolder = new File(feature.getInstallLocation());
 			String contentHash = "unknown";
 			if (fileOrFolder.isFile()) {
@@ -148,6 +154,8 @@ public class PDEInspector {
 			}
 			featuresWriter.append("\n\n" + feature.getFeature().getId() + "\n  content : " + contentHash
 					+ "\n  version : " + feature.getFeature().getVersion());
+			featuresWriter.append("\n  label :" + feature.getFeature().getLabel());
+			featuresWriter.append("\n  provider :" + feature.getFeature().getProviderName());
 		}
 
 		featuresWriter.flush();
