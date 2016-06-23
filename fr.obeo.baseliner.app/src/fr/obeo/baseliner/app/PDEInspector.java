@@ -73,7 +73,7 @@ public class PDEInspector {
 		for (IPluginModelBase pdeModel : PluginRegistry.getActiveModels()) {
 			try {
 				File fileOrFolder = new File(pdeModel.getInstallLocation());
-				String contentHash = "unknown";
+				String contentHash = "folder";
 				if (fileOrFolder.isFile()) {
 					HashCode hashCode = com.google.common.io.Files.hash(fileOrFolder, Hashing.sha256());
 					contentHash = hashCode.toString();
@@ -86,6 +86,9 @@ public class PDEInspector {
 						if (object instanceof IPluginElement) {
 							IPluginElement element = (IPluginElement) object;
 							String id = getAttributeValue(element, "id");
+							if (id==null) {
+								id= "no-id";
+							}
 							String name = getAttributeValue(element, "name");
 							StringBuffer out = new StringBuffer();
 							out.append(
