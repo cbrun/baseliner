@@ -25,7 +25,9 @@ import org.eclipse.pde.core.plugin.PluginRegistry;
 import org.eclipse.pde.core.target.ITargetDefinition;
 import org.eclipse.pde.core.target.ITargetHandle;
 import org.eclipse.pde.core.target.ITargetPlatformService;
+import org.eclipse.pde.internal.core.FeatureModelManager;
 import org.eclipse.pde.internal.core.PDECore;
+import org.eclipse.pde.internal.core.ifeature.IFeatureModel;
 import org.eclipse.pde.internal.core.target.WorkspaceFileTargetHandle;
 
 import com.google.common.base.Charsets;
@@ -64,7 +66,8 @@ public class PDEInspector {
 		}
 
 		File pluginsFile = new File(reportsFolder.getAbsolutePath() + File.separator + "plugins");
-		FileWriter w = new FileWriter(pluginsFile);
+		Files.createParentDirs(pluginsFile);
+		FileWriter pluginsWritter = new FileWriter(pluginsFile);
 
 		Multimap<String, String> idsToElements = LinkedHashMultimap.create();
 		for (IPluginModelBase pdeModel : PluginRegistry.getActiveModels()) {
@@ -75,8 +78,8 @@ public class PDEInspector {
 					HashCode hashCode = com.google.common.io.Files.hash(fileOrFolder, Hashing.sha256());
 					contentHash = hashCode.toString();
 				}
-				w.append("\n\n" + pdeModel.getBundleDescription().getSymbolicName() + "\n  content : " + contentHash
-						+ "\n  version : " + pdeModel.getBundleDescription().getVersion());
+				pluginsWritter.append("\n\n" + pdeModel.getBundleDescription().getSymbolicName() + "\n  content : "
+						+ contentHash + "\n  version : " + pdeModel.getBundleDescription().getVersion());
 				for (IPluginExtension ext : pdeModel.getExtensions().getExtensions()) {
 
 					for (IPluginObject object : ext.getChildren()) {
@@ -106,8 +109,8 @@ public class PDEInspector {
 						e));
 			}
 		}
-		w.flush();
-		w.close();
+		pluginsWritter.flush();
+		pluginsWritter.close();
 		/*
 		 * generate report files for extensions
 		 */
@@ -123,6 +126,29 @@ public class PDEInspector {
 						"Error saving extension points report " + extID + " .", e));
 			}
 		}
+
+		/*
+		 * generate report for features
+		 */
+
+		File featureFile = new File(reportsFolder.getAbsolutePath() + File.separator + "features");
+		Files.createParentDirs(featureFile);
+		FileWriter featuresWriter = new FileWriter(
+				featureFile);
+
+		for (IFeatureModel feature : PDECore.getDefault().getFeatureModelManager().getModels()) {
+			File fileOrFolder = new File(feature.getInstallLocation());
+			String contentHash = "unknown";
+			if (fileOrFolder.isFile()) {
+				HashCode hashCode = com.google.common.io.Files.hash(fileOrFolder, Hashing.sha256());
+				contentHash = hashCode.toString();
+			}
+			featuresWriter.append("\n\n" + feature.getFeature().getId() + "\n  content : " + contentHash
+					+ "\n  version : " + feature.getFeature().getVersion());
+		}
+
+		featuresWriter.flush();
+		featuresWriter.close();
 
 	}
 

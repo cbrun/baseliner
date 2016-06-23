@@ -3,6 +3,8 @@ package fr.obeo.baseliner.app;
 import java.io.File;
 import java.io.IOException;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.BasicMonitor;
 import org.eclipse.emf.common.util.Monitor;
 import org.eclipse.equinox.app.IApplication;
@@ -15,10 +17,9 @@ public class FingerPrinter implements IApplication {
 
 	@Option(name = "-input", usage = "Specify a folder to inspect. If not specified, then the current host installation will be inspected.", metaVar = "FOLDER")
 	private File inputFolder;
-	
+
 	@Option(name = "-reports-folder", usage = "Specify a folder to generate the reports to.", metaVar = "FOLDER")
 	private File reportsFolder;
-	
 
 	/**
 	 * Workspace location. This argument is here only to mimic the OSGi
@@ -53,10 +54,10 @@ public class FingerPrinter implements IApplication {
 
 			final Monitor monitor = new BasicMonitor.Printing(System.out);
 			try {
-				new PDEInspector().inspectProduct(inputFolder,reportsFolder, BasicMonitor.toIProgressMonitor(monitor));
+				new PDEInspector().inspectProduct(inputFolder, reportsFolder, BasicMonitor.toIProgressMonitor(monitor));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				BaselinerAppPlugin.INSTANCE.log(new Status(IStatus.ERROR, BaselinerAppPlugin.INSTANCE.getSymbolicName(),
+						"Error launching inspection.", e));
 			}
 
 		} catch (CmdLineException e) {
@@ -66,7 +67,6 @@ public class FingerPrinter implements IApplication {
 			 */
 			parser.printUsage(System.err);
 			System.err.println();
-			
 
 			return APPLICATION_ERROR;
 		}
