@@ -4,8 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -27,6 +29,7 @@ import org.eclipse.pde.core.target.ITargetHandle;
 import org.eclipse.pde.core.target.ITargetPlatformService;
 import org.eclipse.pde.internal.core.PDECore;
 import org.eclipse.pde.internal.core.ifeature.IFeatureModel;
+import org.eclipse.pde.internal.core.target.LocalTargetHandle;
 import org.eclipse.pde.internal.core.target.WorkspaceFileTargetHandle;
 
 import com.google.common.base.Charsets;
@@ -38,7 +41,6 @@ import com.google.common.collect.Ordering;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
-import com.google.common.primitives.Ints;
 
 public class PDEInspector {
 
@@ -64,6 +66,8 @@ public class PDEInspector {
 
 		if (installationFolder != null) {
 			setInstallationAsTargetPlatform(installationFolder, monitor);
+		} else {
+			setTargetPlatformToRuntime(monitor);
 		}
 
 		File pluginsFile = new File(reportsFolder.getAbsolutePath() + File.separator + "plugins");
@@ -171,7 +175,7 @@ public class PDEInspector {
 		return null;
 	}
 
-	private void setInstallationAsTargetPlatform(File installationFolder, IProgressMonitor monitor) {
+	private void setInstallationAsTargetPlatform(File installationFolder, IProgressMonitor monitor) throws IOException {
 		try {
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 			if (root != null) {
@@ -186,27 +190,19 @@ public class PDEInspector {
 						+ "<location path=\"" + installationFolder.getAbsolutePath() + "\" type=\"Directory\"/>\n"
 						+ "</locations>\n" + "</target>\n" + "";
 
-				prj.getFile(TP_FILENAME).create(new ByteArrayInputStream(fileContent.getBytes("UTF-8")), true, monitor);
-
-				setTargetPlatform(monitor);
-
-				int secondsWaiting = 0;
-				while (!Job.getJobManager().isIdle() && secondsWaiting <= TIMEOUT_IN_SEC) {
-					Job currentJob = Job.getJobManager().currentJob();
-					String jobName = "unknown";
-					ISchedulingRule currentrule = Job.getJobManager().currentRule();
-					if (currentrule != null) {
-						jobName = currentrule.toString();
+				prj.refreshLocal(IProject.DEPTH_INFINITE, monitor);
+				IFile tpFile = prj.getFile(TP_FILENAME);
+				try (InputStream content = new ByteArrayInputStream(fileContent.getBytes("UTF-8"))) {
+					if (!tpFile.exists()) {
+						tpFile.create(content, true, monitor);
+					} else {
+						tpFile.setContents(content, true, false, monitor);
 					}
-					if (currentJob != null) {
-						jobName = currentJob.getName();
-						if (jobName == null) {
-							jobName = currentJob.getClass().getCanonicalName();
-						}
-					}
-					Thread.sleep(1000);
-					secondsWaiting++;
 				}
+
+				setTargetPlatformToFile(monitor);
+
+				waitForjobsToFinish();
 
 			}
 		} catch (CoreException e) {
@@ -221,7 +217,27 @@ public class PDEInspector {
 		}
 	}
 
-	public void setTargetPlatform(IProgressMonitor monitor) throws CoreException {
+	private void waitForjobsToFinish() throws InterruptedException {
+		int secondsWaiting = 0;
+		while (!Job.getJobManager().isIdle() && secondsWaiting <= TIMEOUT_IN_SEC) {
+			Job currentJob = Job.getJobManager().currentJob();
+			String jobName = "unknown";
+			ISchedulingRule currentrule = Job.getJobManager().currentRule();
+			if (currentrule != null) {
+				jobName = currentrule.toString();
+			}
+			if (currentJob != null) {
+				jobName = currentJob.getName();
+				if (jobName == null) {
+					jobName = currentJob.getClass().getCanonicalName();
+				}
+			}
+			Thread.sleep(1000);
+			secondsWaiting++;
+		}
+	}
+
+	public void setTargetPlatformToFile(IProgressMonitor monitor) throws CoreException {
 		if (service.isPresent()) {
 			SubMonitor subMonitor = SubMonitor.convert(monitor, 100);
 			ITargetHandle[] targets = service.get().getTargets(subMonitor.newChild(20));
@@ -239,9 +255,28 @@ public class PDEInspector {
 		}
 	}
 
-	private boolean trySetTargetPlatform(SubMonitor subMonitor, WorkspaceFileTargetHandle fileHandle)
-			throws CoreException {
-		File targetFile = ((WorkspaceFileTargetHandle) fileHandle).getTargetFile().getLocation().toFile();
+	public void setTargetPlatformToRuntime(IProgressMonitor monitor) {
+		if (service.isPresent()) {
+			SubMonitor subMonitor = SubMonitor.convert(monitor, 100);
+			ITargetHandle[] targets = service.get().getTargets(subMonitor.newChild(20));
+
+			boolean hasBeenSet = false;
+			for (int i = 0; i < targets.length && !hasBeenSet; i++) {
+				if (targets[i] instanceof LocalTargetHandle) {
+					try {
+						trySetTargetPlatform(subMonitor, targets[i]);
+						hasBeenSet = true;
+					} catch (CoreException e) {
+						BaselinerAppPlugin.INSTANCE
+								.log(new Status(IStatus.ERROR, BaselinerAppPlugin.INSTANCE.getSymbolicName(),
+										"Error setting local target platfrorm.", e));
+					}
+				}
+			}
+		}
+	}
+
+	private boolean trySetTargetPlatform(SubMonitor subMonitor, ITargetHandle fileHandle) throws CoreException {
 		ITargetDefinition targetDefinitionToSet = fileHandle.getTargetDefinition();
 
 		if (!targetDefinitionToSet.isResolved()) {
