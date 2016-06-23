@@ -36,6 +36,7 @@
         <!-- OSGi bundles -->
           <module>fr.obeo.baseliner.ui/</module>
           <module>fr.obeo.baseliner/</module>
+          <module>fr.obeo.baseliner.app/</module>
           <module>fr.obeo.baseliner.pde/</module>
           <module>fr.obeo.baseliner.bnd/</module>
           <module>fr.obeo.baseliner.tests/</module>
